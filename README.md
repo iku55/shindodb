@@ -1,7 +1,7 @@
 # 計測震度データベース
 気象庁が作成する[地震・火山月報（防災編）](https://www.data.jma.go.jp/eqev/data/gaikyo/index.html#monthly)のPDFから各地震の観測された計測震度のデータを抜き出したものを表示します。  
 [震度データベース](https://www.data.jma.go.jp/svd/eqdb/data/shindo/)への移動や、[震度データベース](https://www.data.jma.go.jp/svd/eqdb/data/shindo/)のURLから地震を検索することができます。
-> **Note**
+> **Note**  
 > 月地震一覧JSONやjs/stations.jsは気象庁ホームページより作成したもの (CC BY 4.0)
 ## データ形式
 ソース一覧JSONと月地震一覧JSONに分かれています。
