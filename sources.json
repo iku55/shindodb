@@ -1,0 +1,52 @@
+[
+    {
+        "path": "202203.json",
+        "name": "202203",
+        "year": "2022",
+        "month": "3",
+        "source": {
+            "name": "2022年3月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202203/202203furoku_1.pdf"
+        }
+    },
+    {
+        "path": "202204.json",
+        "name": "202204",
+        "year": "2022",
+        "month": "4",
+        "source": {
+            "name": "2022年4月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202204/202204furoku_1.pdf"
+        }
+    },
+    {
+        "path": "202205.json",
+        "name": "202205",
+        "year": "2022",
+        "month": "5",
+        "source": {
+            "name": "2022年5月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202205/202205furoku_1.pdf"
+        }
+    },
+    {
+        "path": "202206.json",
+        "name": "202206",
+        "year": "2022",
+        "month": "6",
+        "source": {
+            "name": "2022年6月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202206/202206furoku_1.pdf"
+        }
+    },
+    {
+        "path": "202207.json",
+        "name": "202207",
+        "year": "2022",
+        "month": "7",
+        "source": {
+            "name": "2022年7月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202207/202207furoku_1.pdf"
+        }
+    }
+]

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>計測震度データベース</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/uikit.min.css" />
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+        }
+        .btn {
+            position: fixed;
+            z-index: 1000;
+            border: 2px solid #cbcbcb;
+            left: 10px;
+        }
+        #fromurlbtn {
+            top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="uk-container">
+        <a id="fromurlbtn" href="fromurl.html" class="uk-icon-button btn" uk-icon="search"
+        uk-tooltip="title: 震度データベースのURLから選択する; pos: right"></a>
+
+        <h1 class="uk-heading-divider">一覧</h1>
+
+        <ul class="uk-list uk-list-divider" id="list">
+        </ul>
+
+    </div>
+    
+    <script src="js/uikit.min.js"></script>
+    <script src="js/uikit-icons.min.js"></script>
+    <script>
+        fetch('sources.json').then(res => res.json().then(sources => {
+            for (const source of sources) {
+                document.getElementById('list').innerHTML += '<li><a href="list.html#'+source.name+'">'+source.year+'年'+source.month+'月</a></li>';
+            }
+        }))
+    </script>
+</body>
+</html>

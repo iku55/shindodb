@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <title>計測震度データベース</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/uikit.min.css" />
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+        }
+
+        #table tr {
+            cursor: pointer;
+        }
+
+        .btn {
+            position: fixed;
+            z-index: 1000;
+            border: 2px solid #cbcbcb;
+            left: 10px;
+        }
+
+        #backbtn {
+            top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="uk-container">
+        <div class="uk-margin" style="margin-top: 20%;">
+            <input id="input" class="uk-input" type="text" placeholder="ここに震度データベースのURLをペーストしてください">
+            <div class="uk-alert-warning" uk-alert id="alert" style="display: none;">
+            </div>
+        </div>
+    </div>
+
+    <a id="backbtn" href="index.html" class="uk-icon-button btn" uk-icon="arrow-left"
+        uk-tooltip="title: 月データ一覧へ戻る; pos: right"></a>
+
+    <script src="js/uikit.min.js"></script>
+    <script src="js/uikit-icons.min.js"></script>
+    <script>
+        document.getElementById('input').oninput = () => {
+            hideAlert();
+            if (document.getElementById('input').value.includes('://www.data.jma.go.jp/svd/eqdb/data/shindo/') && document.getElementById('input').value.includes('#')) {
+                if (document.getElementById('input').value.split('#')[1].length == 14) {
+                    fetch('sources.json').then(res => res.json().then(sources => {
+                        var source = sources.find(d => d.name == document.getElementById('input').value.split('#')[1].substring(0, 6));
+                        if (source) {
+                            fetch(source.path).then(res => res.json().then(quakes => {
+                                var quake = quakes.find(d => d.dbid == document.getElementById('input').value.split('#')[1]);
+                                if (quake) {
+                                    location.href = 'view.html#'+source.name+'.'+quake.id;
+                                } else {
+                                    showAlert('対象地震のデータが見つかりませんでした')
+                                }
+                            }))
+                        } else {
+                            showAlert('対象月のデータが見つかりませんでした')
+                        }
+                    }))
+                } else {
+                    showAlert('震度データベースのURLを入力してください');
+                }
+            } else {
+                showAlert('震度データベースのURLを入力してください');
+            }
+        }
+
+        function showAlert(msg) {
+            document.getElementById('alert').style.display = '';
+            document.getElementById('alert').innerHTML = '<p>'+msg+'</p>';
+        }
+        function hideAlert() {
+            document.getElementById('alert').style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>

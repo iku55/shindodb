@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>計測震度データベース</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/leaflet.css">
+    <link rel="stylesheet" href="css/uikit.min.css" />
+    <style>
+        html,
+        body,
+        #map {
+            height: 100%;
+            margin: 0;
+        }
+
+        .leaflet-container .leaflet-control-attribution {
+            background: rgba(255, 255, 255, 0.5);
+            color: rgb(31, 51, 73);
+        }
+
+        .leaflet-container .leaflet-control-attribution a {
+            color: rgb(31, 51, 73);
+        }
+
+        .leaflet-bar a:hover {
+            color: black;
+            text-decoration: none;
+        }
+
+        .btn {
+            position: fixed;
+            z-index: 1000;
+            border: 2px solid #cbcbcb;
+            left: 10px;
+        }
+
+        #zoominbtn {
+            top: 10px;
+        }
+
+        #zoomoutbtn {
+            top: 50px;
+        }
+
+        #sharebtn {
+            top: 90px;
+        }
+
+        #dbbtn {
+            top: 130px;
+        }
+
+        #pdfbtn {
+            top: 170px;
+        }
+
+        #infobtn {
+            top: 210px;
+        }
+
+        #listbtn {
+            top: 250px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <a id="zoominbtn" onclick="map.setZoom(map.getZoom() + 0.5);" class="uk-icon-button btn" uk-icon="plus"
+        uk-tooltip="title: 拡大; pos: right"></a>
+    <a id="zoomoutbtn" onclick="map.setZoom(map.getZoom() - 0.5);" class="uk-icon-button btn" uk-icon="minus"
+        uk-tooltip="title: 縮小; pos: right"></a>
+    <a id="sharebtn" onclick="navigator.clipboard.writeText(location.href);" class="uk-icon-button btn" uk-icon="link"
+        uk-tooltip="title: リンクをコピー; pos: right"></a>
+    <a id="dbbtn" href="" class="uk-icon-button btn" uk-icon="database"
+        uk-tooltip="title: 気象庁 震度データベースに移動; pos: right"></a>
+    <a id="pdfbtn" href="" class="uk-icon-button btn" uk-icon="file-pdf"
+        uk-tooltip="title: 地震・火山月報のPDFに移動; pos: right"></a>
+    <a id="infobtn" uk-toggle="target: #info-modal" class="uk-icon-button btn" uk-icon="info"
+        uk-tooltip="title: 地震の情報; pos: right"></a>
+    <a id="listbtn" href="" class="uk-icon-button btn" uk-icon="list"
+        uk-tooltip="title: リストに戻る; pos: right"></a>
+    
+    <div id="info-modal" class="uk-modal-container" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body" uk-overflow-auto style="height: 100%;">
+            <button class="uk-modal-close-default" type="button" uk-close></button>
+            <div id="modalbody" class="uk-modal-body">
+                <table class="uk-table uk-table-small uk-table-striped">
+                    <thead>
+                        <tr>
+                            <th>地震の発生日時</th>
+                            <th>震央地名</th>
+                            <th>緯度</th>
+                            <th>経度</th>
+                            <th>深さ</th>
+                            <th>M</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-earthquakes"></tbody>
+                </table>
+                <div class="uk-overflow-auto">
+                    <table class="uk-table uk-table-small uk-table-striped">
+                        <thead>
+                            <tr>
+                                <th class="uk-width-1-6">都道府県</th>
+                                <th class="uk-width-1-6">震度</th>
+                                <th class="uk-width-2-3">観測点名=計測震度</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-intensities"></tbody>
+                    </table>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <script src="js/uikit.min.js"></script>
+    <script src="js/uikit-icons.min.js"></script>
+    <script src="js/leaflet.js"></script>
+    <script src="js/stations.js"></script>
+    <script>
+        if (!location.hash) location.href = 'index.html';
+        if (location.hash.split('.').length !== 2) location.href = 'index.html';
+        var map = L.map('map', {
+            zoomControl: false,
+            zoomSnap: 0.5,
+            zoomDelta: 0.5,
+            wheelPxPerZoomLevel: 500,
+            minZoom: 5,
+            maxZoom: 14
+        });
+        L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/blank/{z}/{x}/{y}.png', {
+            attribution: '<a href="https://maps.gsi.go.jp/development/ichiran.html">国土地理院</a>'
+        }).addTo(map);
+
+        fetch(location.hash.split('.')[0].replace('#', '') + '.json').then(res => res.json().then(quakes => {
+            var quake = quakes.find(d => d.id == location.hash.split('.')[1]);
+            var lng = quake.longitude.replace('°', '/').replace('’', '/').split('/');
+            var longitude = Number(lng[0]) + (Number(lng[1]) / 60)
+            var lat = quake.latitude.replace('°', '/').replace('’', '/').split('/');
+            var latitude = Number(lat[0]) + (Number(lat[1]) / 60)
+            L.marker([latitude, longitude], {
+                icon: L.icon({
+                    iconUrl: 'images/epicenter.png',
+                    iconSize: [40, 40],
+                    iconAnchor: [20, 20]
+                })
+            })
+                .bindPopup('<span uk-icon="icon: clock"></span>時刻<br>' + quake.days + '日' + quake.hours + '時' + quake.minutes + '分ごろ<br><span uk-icon="icon: location"></span>震源<br>' + quake.epicentername + ' 深さ' + quake.depth)
+                .addTo(map);
+            map.setView([latitude, longitude], 7);
+            var intList = {};
+            for (const point of Object.entries(quake.int)) {
+                var station = stations.find(d => d.name == point[0].replace('＊', ''));
+                L.marker([station.lat, station.lon], {
+                    icon: L.icon({
+                        iconUrl: 'images/S' + point[1] + '.gif',
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 10]
+                    })
+                }).bindTooltip(point[0] + '=' + point[1]).addTo(map)
+                if (!intList[station.pref.name]) { intList[station.pref.name] = {} }
+                if (!intList[station.pref.name][toIntText(point[1])]) { intList[station.pref.name][toIntText(point[1])] = '' }
+                intList[station.pref.name][toIntText(point[1])] += point[0] + '=' + point[1] + '　';
+            }
+            console.log(intList)
+            for (const pref of Object.entries(intList)) {
+                for (const int of Object.entries(pref[1])) {
+                    document.getElementById('table-intensities').innerHTML += '<tr><td>'+pref[0]+'</td><td>'+int[0]+'</td><td>'+int[1]+'</td></tr>'
+                }
+            }
+            document.getElementById('dbbtn').setAttribute('href', 'https://www.data.jma.go.jp/svd/eqdb/data/shindo/index.html#' + quake.dbid)
+            fetch('sources.json').then(res => res.json().then(sources => {
+                var source = sources.find(d => d.name == location.hash.split('.')[0].replace('#', ''))
+                map.attributionControl.addAttribution('<a href="' + source.source.link + '">' + source.source.name + '</a>');
+                document.getElementById('pdfbtn').setAttribute('href', source.source.link)
+                document.getElementById('listbtn').setAttribute('href', 'list.html#'+source.name)
+                document.getElementById('table-earthquakes').innerHTML = '<tr><td>' + source.year + '/' + source.month + '/' + quake.days + ' ' + quake.hours + ':' + quake.minutes + '</td><td>' + quake.epicentername + '</td><td>' + quake.latitude + '</td><td>' + quake.longitude + '</td><td>' + quake.depth + '</td><td>' + quake.magnitude + '</td></tr>'
+                if (quake.earthquakes) {
+                    for (const q of quake.earthquakes) {
+                        document.getElementById('table-earthquakes').innerHTML += '<tr><td>' + source.year + '/' + source.month + '/' + q.days + ' ' + q.hours + ':' + q.minutes + '</td><td>' + q.epicentername + '</td><td>' + q.latitude + '</td><td>' + q.longitude + '</td><td>' + q.depth + '</td><td>' + q.magnitude + '</td></tr>'
+                    }
+                }
+                // for (const i of Object.entries(quake.int)) {
+                //     document.getElementById('intensity').innerHTML += i[0]+'='+i[1]+' '
+
+                // }
+            }))
+        }))
+
+        function toIntText(int) {
+            if (int < 0.5) {return '０';
+            } else if (int < 1.5) {return '１';
+            } else if (int < 2.5) {return '２';
+            } else if (int < 3.5) {return '３';
+            } else if (int < 4.5) {return '４';
+            } else if (int < 5.0) {return '５弱';
+            } else if (int < 5.5) {return '５強';
+            } else if (int < 6.0) {return '６弱';
+            } else if (int < 6.5) {return '６強';
+            } else  {return '７';
+            }
+        }
+    </script>
+</body>
+
+</html>

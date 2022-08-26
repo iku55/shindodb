@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>計測震度データベース</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/uikit.min.css" />
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+        }
+        #table tr {
+            cursor: pointer;
+        }
+        .btn {
+            position: fixed;
+            z-index: 1000;
+            border: 2px solid #cbcbcb;
+            left: 10px;
+        }
+        #backbtn {
+            top: 10px;
+        }
+        #fromurlbtn {
+            top: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    
+
+    <div class="uk-container">
+        <a id="backbtn" href="index.html" class="uk-icon-button btn" uk-icon="arrow-left"
+        uk-tooltip="title: 月データ一覧へ戻る; pos: right"></a>
+        <a id="fromurlbtn" href="fromurl.html" class="uk-icon-button btn" uk-icon="search"
+        uk-tooltip="title: 震度データベースのURLから選択する; pos: right"></a>
+
+        <h1 class="uk-heading-divider" id="title"></h1>
+
+        <div class="uk-overflow-auto">
+            <table class="uk-table uk-table-divider uk-table-small uk-table-hover">
+                <thead>
+                    <tr>
+                        <th>発生時刻</th>
+                        <th>震央地名</th>
+                        <th>深さ</th>
+                        <th>マグニチュード</th>
+                        <th>最大計測震度</th>
+                    </tr>
+                </thead>
+                <tbody id="table">
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script src="js/uikit.min.js"></script>
+    <script src="js/uikit-icons.min.js"></script>
+    <script>
+        fetch('sources.json').then(res => res.json().then(sources => {
+            var source = sources.find(d => d.name == location.hash.replace('#', ''));
+            document.getElementById('title').innerText = source.year+'年'+source.month+'月';
+            fetch(source.path).then(res => res.json().then(quakes => {
+            for (const quake of quakes) {
+                document.getElementById('table').innerHTML += '<tr onclick="location.href=\'view.html#'+source.name+'.' + quake.id + '\';"><td>' + quake.days + '日' + quake.hours + '時' + quake.minutes + '分</td><td>' + quake.epicentername + '</td><td>' + quake.depth + '</td><td>M' + quake.magnitude + '</td><td>' + Object.entries(quake.int)[0][1] + '</td></tr>';
+            }
+        }))
+        }))
+        
+    </script>
+</body>
+
+</html>
