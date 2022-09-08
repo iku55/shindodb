@@ -48,5 +48,15 @@
             "name": "2022年7月地震・火山月報(防災編)",
             "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202207/202207furoku_1.pdf"
         }
+    },
+    {
+        "path": "202208.json",
+        "name": "202208",
+        "year": "2022",
+        "month": "8",
+        "source": {
+            "name": "2022年8月 気象庁 報道発表",
+            "link": "https://www.jma.go.jp/jma/press/2209/08a/2208felt-eq.pdf"
+        }
     }
 ]
