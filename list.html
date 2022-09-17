@@ -49,7 +49,7 @@
                         <th>震央地名</th>
                         <th>深さ</th>
                         <th>マグニチュード</th>
-                        <th>最大計測震度</th>
+                        <th>最大震度</th>
                     </tr>
                 </thead>
                 <tbody id="table">
@@ -67,11 +67,24 @@
             document.getElementById('title').innerText = source.year+'年'+source.month+'月';
             fetch(source.path).then(res => res.json().then(quakes => {
             for (const quake of quakes) {
-                document.getElementById('table').innerHTML += '<tr onclick="location.href=\'view.html#'+source.name+'.' + quake.id + '\';"><td>' + quake.days + '日' + quake.hours + '時' + quake.minutes + '分</td><td>' + quake.epicentername + '</td><td>' + quake.depth + '</td><td>M' + quake.magnitude + '</td><td>' + Object.entries(quake.int)[0][1] + '</td></tr>';
+                document.getElementById('table').innerHTML += '<tr onclick="location.href=\'view.html#'+source.name+'.' + quake.id + '\';"><td>' + quake.days + '日' + quake.hours + '時' + quake.minutes + '分</td><td>' + quake.epicentername + '</td><td>' + quake.depth + '</td><td>M' + quake.magnitude + '</td><td>震度' + toIntText(Object.entries(quake.int)[0][1]) + '</td></tr>';
             }
         }))
         }))
         
+        function toIntText(int) {
+            if (int < 0.5) {return '０';
+            } else if (int < 1.5) {return '１';
+            } else if (int < 2.5) {return '２';
+            } else if (int < 3.5) {return '３';
+            } else if (int < 4.5) {return '４';
+            } else if (int < 5.0) {return '５弱';
+            } else if (int < 5.5) {return '５強';
+            } else if (int < 6.0) {return '６弱';
+            } else if (int < 6.5) {return '６強';
+            } else  {return '７';
+            }
+        }
     </script>
 </body>
 
