@@ -68,5 +68,15 @@
             "name": "2022年9月 気象庁 報道発表",
             "link": "https://www.jma.go.jp/jma/press/2210/11a/2209felt-eq.pdf"
         }
+    },
+    {
+        "path": "202210.json",
+        "name": "202210",
+        "year": "2022",
+        "month": "10",
+        "source": {
+            "name": "2022年10月 気象庁 報道発表",
+            "link": "https://www.jma.go.jp/jma/press/2211/09a/2210felt-eq.pdf"
+        }
     }
 ]
