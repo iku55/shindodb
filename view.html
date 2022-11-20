@@ -157,7 +157,8 @@
                 var station = stations.find(d => d.name == point[0].replace('＊', ''));
                 L.marker([station.lat, station.lon], {
                     icon: L.icon({
-                        iconUrl: 'images/S' + point[1] + '.gif',
+                        iconUrl: 'images/jma/S' + point[1] + '.gif',
+                        // iconUrl: 'images/kmoni/S' + point[1] + '.svg',
                         iconSize: [20, 20],
                         iconAnchor: [10, 10]
                     })
