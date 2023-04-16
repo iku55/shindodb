@@ -78,5 +78,45 @@
             "name": "2022年10月 気象庁 報道発表",
             "link": "https://www.jma.go.jp/jma/press/2211/09a/2210felt-eq.pdf"
         }
+    },
+    {
+        "path": "202211.json",
+        "name": "202211",
+        "year": "2022",
+        "month": "11",
+        "source": {
+            "name": "2022年11月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202211/202211furoku_1.pdf"
+        }
+    },
+    {
+        "path": "202212.json",
+        "name": "202212",
+        "year": "2022",
+        "month": "12",
+        "source": {
+            "name": "2022年12月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202212/202212furoku_1.pdf"
+        }
+    },
+    {
+        "path": "202301.json",
+        "name": "202301",
+        "year": "2023",
+        "month": "1",
+        "source": {
+            "name": "2023年1月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202301/202301furoku_1.pdf"
+        }
+    },
+    {
+        "path": "202302.json",
+        "name": "202302",
+        "year": "2023",
+        "month": "2",
+        "source": {
+            "name": "2023年2月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202302/202302furoku_1.pdf"
+        }
     }
 ]
