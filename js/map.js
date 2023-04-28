@@ -44,7 +44,6 @@ const getSources = () => {
         console.time('getSources');
         fetch('sources.json').then(res => res.json().then(sources => {
             source = sources.find(d => d.name == location.hash.split('.')[0].replace('#', ''));
-            console.log(source);
             map.addControl(new maplibregl.AttributionControl({
                 customAttribution: '<a href="' + source.source.link + '">' + source.source.name + '</a>'
             }));
@@ -58,7 +57,6 @@ const getSources = () => {
 const getStationsData = () => {
     return new Promise((resolve, reject) => {
         console.time('getStationsData');
-        console.log(source);
         getStationData(
             new Date(source.year + '/' + source.month + '/' + quake.days + ' ' + quake.hours + ':' + quake.minutes + ':00+0900')
         ).then(res => res.json().then(data => {
@@ -107,7 +105,6 @@ const drawPoints = () => {
             if (!intList[station.pref.name][toIntText(point[1])]) { intList[station.pref.name][toIntText(point[1])] = '' }
             intList[station.pref.name][toIntText(point[1])] += point[0] + '=' + point[1] + '　';
         }
-        console.log(intList)
         for (const pref of Object.entries(intList)) {
             for (const int of Object.entries(pref[1])) {
                 document.getElementById('table-intensities').innerHTML += '<tr><td>' + pref[0] + '</td><td>' + int[0] + '</td><td>' + int[1] + '</td></tr>'
@@ -122,8 +119,6 @@ const drawPoints = () => {
 const setSideButtons = () => {
     return new Promise((resolve, reject) => {
         console.time('setSideButtons');
-        // TODO: ↓
-        // map.attributionControl.addAttribution();
         document.getElementById('pdfbtn').setAttribute('href', source.source.link)
         document.getElementById('listbtn').setAttribute('href', 'list.html#' + source.name)
         document.getElementById('dbbtn').setAttribute('href', 'https://www.data.jma.go.jp/svd/eqdb/data/shindo/index.html#' + quake.dbid)

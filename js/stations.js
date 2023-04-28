@@ -1,5 +1,3 @@
-/*  気象庁ホームページより作成(CC BY 4.0)  */
-
 function getStationData(date) {
     if (date.getTime() >= new Date('2023-03-16T03:00:00.000Z').getTime()) {
         return fetch('https://raw.githubusercontent.com/iku55/jma_int_stations/main/history/20230316.json');
