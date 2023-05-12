@@ -128,5 +128,15 @@
             "name": "2023年3月地震・火山月報(防災編)",
             "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202303/202303furoku_1.pdf"
         }
+    },
+    {
+        "path": "202304.json",
+        "name": "202304",
+        "year": "2023",
+        "month": "4",
+        "source": {
+            "name": "2023年4月 気象庁 報道発表",
+            "link": "https://www.jma.go.jp/jma/press/2305/11a/2304felt-eq.pdf"
+        }
     }
 ]
