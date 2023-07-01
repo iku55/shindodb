@@ -47,6 +47,7 @@ const getSources = () => {
             map.addControl(new maplibregl.AttributionControl({
                 customAttribution: '<a href="' + source.source.link + '">' + source.source.name + '</a>'
             }));
+            document.title = source.year+'年'+source.month+'月#'+quake.id+'(最大震度'+toIntText(Object.entries(quake.int)[0][1])+') - 計測震度データベース';
             console.timeEnd('getSources');
             resolve();
         }))
