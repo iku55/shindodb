@@ -148,5 +148,15 @@
             "name": "2023年5月 気象庁 報道発表",
             "link": "https://www.jma.go.jp/jma/press/2306/08a/2305felt-eq.pdf"
         }
+    },
+    {
+        "path": "202306.json",
+        "name": "202306",
+        "year": "2023",
+        "month": "6",
+        "source": {
+            "name": "2023年6月 気象庁 報道発表",
+            "link": "https://www.jma.go.jp/jma/press/2307/10d/2306felt-eq.pdf"
+        }
     }
 ]
