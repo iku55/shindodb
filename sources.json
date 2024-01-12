@@ -55,7 +55,7 @@
         "year": "2022",
         "month": "8",
         "source": {
-            "name": "2022年8月 気象庁 報道発表",
+            "name": "気象庁 報道発表(2022年9月)",
             "link": "https://www.jma.go.jp/jma/press/2209/08a/2208felt-eq.pdf"
         }
     },
@@ -65,7 +65,7 @@
         "year": "2022",
         "month": "9",
         "source": {
-            "name": "2022年9月 気象庁 報道発表",
+            "name": "気象庁 報道発表(2022年10月)",
             "link": "https://www.jma.go.jp/jma/press/2210/11a/2209felt-eq.pdf"
         }
     },
@@ -75,7 +75,7 @@
         "year": "2022",
         "month": "10",
         "source": {
-            "name": "2022年10月 気象庁 報道発表",
+            "name": "気象庁 報道発表(2022年11月)",
             "link": "https://www.jma.go.jp/jma/press/2211/09a/2210felt-eq.pdf"
         }
     },
@@ -135,7 +135,7 @@
         "year": "2023",
         "month": "4",
         "source": {
-            "name": "2023年4月 気象庁 報道発表",
+            "name": "気象庁 報道発表(2023年5月)",
             "link": "https://www.jma.go.jp/jma/press/2305/11a/2304felt-eq.pdf"
         }
     },
@@ -145,7 +145,7 @@
         "year": "2023",
         "month": "5",
         "source": {
-            "name": "2023年5月 気象庁 報道発表",
+            "name": "気象庁 報道発表(2023年6月)",
             "link": "https://www.jma.go.jp/jma/press/2306/08a/2305felt-eq.pdf"
         }
     },
@@ -155,7 +155,7 @@
         "year": "2023",
         "month": "6",
         "source": {
-            "name": "2023年6月 気象庁 報道発表",
+            "name": "気象庁 報道発表(2023年7月)",
             "link": "https://www.jma.go.jp/jma/press/2307/10d/2306felt-eq.pdf"
         }
     },
@@ -165,7 +165,7 @@
         "year": "2023",
         "month": "7",
         "source": {
-            "name": "2023年7月 気象庁 報道発表",
+            "name": "気象庁 報道発表(2023年8月)",
             "link": "https://www.jma.go.jp/jma/press/2308/08c/2307felt-eq.pdf"
         }
     },
@@ -175,7 +175,7 @@
         "year": "2023",
         "month": "8",
         "source": {
-            "name": "2023年8月 気象庁 報道発表",
+            "name": "気象庁 報道発表(2023年9月)",
             "link": "https://www.jma.go.jp/jma/press/2309/08a/2308felt-eq.pdf"
         }
     },
@@ -185,7 +185,7 @@
         "year": "2023",
         "month": "9",
         "source": {
-            "name": "2023年9月 気象庁 報道発表",
+            "name": "気象庁 報道発表(2023年10月)",
             "link": "https://www.jma.go.jp/jma/press/2310/10a/2309felt-eq.pdf"
         }
     },
@@ -195,7 +195,7 @@
         "year": "2023",
         "month": "10",
         "source": {
-            "name": "2023年10月 気象庁 報道発表",
+            "name": "気象庁 報道発表(2023年11月)",
             "link": "https://www.jma.go.jp/jma/press/2311/09a/2310felt-eq.pdf"
         }
     },
@@ -205,8 +205,18 @@
         "year": "2023",
         "month": "11",
         "source": {
-            "name": "2023年11月 気象庁 報道発表",
+            "name": "気象庁 報道発表(2023年12月)",
             "link": "https://www.jma.go.jp/jma/press/2312/08a/2311felt-eq.pdf"
+        }
+    },
+    {
+        "path": "202312.json",
+        "name": "202312",
+        "year": "2023",
+        "month": "12",
+        "source": {
+            "name": "気象庁 報道発表(2024年1月)",
+            "link": "https://www.jma.go.jp/jma/press/2401/12a/2312felt-eq.pdf"
         }
     }
 ]
