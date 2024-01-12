@@ -98,7 +98,12 @@ const drawPoints = () => {
         console.time('drawPoints');
         var intList = {};
         for (const point of Object.entries(quake.int)) {
-            var station = stations.find(d => d.name == point[0].replace('＊', ''));
+            var station = stations.find(d => d.name == point[0].replace('＊', '').replace(/\(旧[０１２３４５６７８９]*\)/, ''));
+            if (!station) {
+                console.log('観測点 "'+point[0]+'" の詳細情報を確認できませんでした');
+                document.getElementById('modalbody').innerHTML = '<div class="uk-alert-danger" uk-alert><p>'+'観測点 "'+point[0]+'" の詳細情報を確認できなかったため、表示していません。</p></div>'+document.getElementById('modalbody').innerHTML;
+                continue;
+            }
             new maplibregl.Marker(makeMarkerIcon('images/jma/S' + point[1] + '.gif', 20, 20, false, point[0] + '=' + point[1], point[1]*10))
                 .setLngLat([station.lon, station.lat])
                 .addTo(map);
