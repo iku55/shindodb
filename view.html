@@ -58,8 +58,12 @@
             top: 210px;
         }
 
-        #listbtn {
+        #iconbtn {
             top: 250px;
+        }
+
+        #listbtn {
+            top: 290px;
         }
     </style>
 </head>
@@ -78,6 +82,8 @@
         uk-tooltip="title: 地震・火山月報のPDFに移動; pos: right"></a>
     <a id="infobtn" uk-toggle="target: #info-modal" class="uk-icon-button btn" uk-icon="info"
         uk-tooltip="title: 地震の情報; pos: right"></a>
+    <a id="iconbtn" onclick="if(document.cookie.includes('icon=jma')) document.cookie = document.cookie.replace('icon=jma','icon=kmoni'); else document.cookie = document.cookie.replace('icon=kmoni','icon=jma'); document.location.reload();" class="uk-icon-button btn" uk-icon="image"
+        uk-tooltip="title: 震度配色を切り替え<br>(気象庁/強震モニタ); pos: right"></a>
     <a id="listbtn" href="" class="uk-icon-button btn" uk-icon="list" uk-tooltip="title: リストに戻る; pos: right"></a>
 
     <div id="info-modal" class="uk-modal-container" uk-modal>
