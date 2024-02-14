@@ -2,6 +2,7 @@
     {
         "text": "2022年3月",
         "visible": true,
+        "dbid": true,
         "path": "202203.json",
         "name": "202203",
         "year": "2022",
@@ -14,6 +15,7 @@
     {
         "text": "2022年4月",
         "visible": true,
+        "dbid": true,
         "path": "202204.json",
         "name": "202204",
         "year": "2022",
@@ -26,6 +28,7 @@
     {
         "text": "2022年5月",
         "visible": true,
+        "dbid": true,
         "path": "202205.json",
         "name": "202205",
         "year": "2022",
@@ -38,6 +41,7 @@
     {
         "text": "2022年6月",
         "visible": true,
+        "dbid": true,
         "path": "202206.json",
         "name": "202206",
         "year": "2022",
@@ -50,6 +54,7 @@
     {
         "text": "2022年7月",
         "visible": true,
+        "dbid": true,
         "path": "202207.json",
         "name": "202207",
         "year": "2022",
@@ -62,6 +67,7 @@
     {
         "text": "2022年8月",
         "visible": true,
+        "dbid": true,
         "path": "202208.json",
         "name": "202208",
         "year": "2022",
@@ -74,6 +80,7 @@
     {
         "text": "2022年9月",
         "visible": true,
+        "dbid": true,
         "path": "202209.json",
         "name": "202209",
         "year": "2022",
@@ -86,6 +93,7 @@
     {
         "text": "2022年10月",
         "visible": true,
+        "dbid": true,
         "path": "202210.json",
         "name": "202210",
         "year": "2022",
@@ -98,6 +106,7 @@
     {
         "text": "2022年11月",
         "visible": true,
+        "dbid": true,
         "path": "202211.json",
         "name": "202211",
         "year": "2022",
@@ -110,6 +119,7 @@
     {
         "text": "2022年12月",
         "visible": true,
+        "dbid": true,
         "path": "202212.json",
         "name": "202212",
         "year": "2022",
@@ -122,6 +132,7 @@
     {
         "text": "2023年1月",
         "visible": true,
+        "dbid": true,
         "path": "202301.json",
         "name": "202301",
         "year": "2023",
@@ -134,6 +145,7 @@
     {
         "text": "2023年2月",
         "visible": true,
+        "dbid": true,
         "path": "202302.json",
         "name": "202302",
         "year": "2023",
@@ -146,6 +158,7 @@
     {
         "text": "2023年3月",
         "visible": true,
+        "dbid": true,
         "path": "202303.json",
         "name": "202303",
         "year": "2023",
@@ -158,6 +171,7 @@
     {
         "text": "2023年4月",
         "visible": true,
+        "dbid": true,
         "path": "202304.json",
         "name": "202304",
         "year": "2023",
@@ -170,6 +184,7 @@
     {
         "text": "2023年5月",
         "visible": true,
+        "dbid": true,
         "path": "202305.json",
         "name": "202305",
         "year": "2023",
@@ -182,6 +197,7 @@
     {
         "text": "2023年6月",
         "visible": true,
+        "dbid": true,
         "path": "202306.json",
         "name": "202306",
         "year": "2023",
@@ -194,6 +210,7 @@
     {
         "text": "2023年7月",
         "visible": true,
+        "dbid": true,
         "path": "202307.json",
         "name": "202307",
         "year": "2023",
@@ -206,6 +223,7 @@
     {
         "text": "2023年8月",
         "visible": true,
+        "dbid": true,
         "path": "202308.json",
         "name": "202308",
         "year": "2023",
@@ -218,6 +236,7 @@
     {
         "text": "2023年9月",
         "visible": true,
+        "dbid": true,
         "path": "202309.json",
         "name": "202309",
         "year": "2023",
@@ -230,6 +249,7 @@
     {
         "text": "2023年10月",
         "visible": true,
+        "dbid": true,
         "path": "202310.json",
         "name": "202310",
         "year": "2023",
@@ -242,6 +262,7 @@
     {
         "text": "2023年11月",
         "visible": true,
+        "dbid": true,
         "path": "202311.json",
         "name": "202311",
         "year": "2023",
@@ -254,6 +275,7 @@
     {
         "text": "2023年12月",
         "visible": true,
+        "dbid": true,
         "path": "202312.json",
         "name": "202312",
         "year": "2023",
@@ -266,6 +288,7 @@
     {
         "text": "【容量注意】2024年1月(全地震) ※ブラウザがクラッシュする可能性があるため非推奨",
         "visible": true,
+        "dbid": false,
         "path": "202401.json",
         "name": "202401",
         "year": "2024",
@@ -278,6 +301,7 @@
     {
         "text": "2024年1月(最大震度4以上)",
         "visible": true,
+        "dbid": true,
         "path": "202401_over_4.json",
         "name": "202401_over_4",
         "year": "2024",
