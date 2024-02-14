@@ -55,7 +55,8 @@
     <script>
         fetch('sources.json').then(res => res.json().then(sources => {
             for (const source of sources) {
-                document.getElementById('list').innerHTML += '<li><a href="list.html#'+source.name+'">'+source.year+'年'+source.month+'月</a></li>';
+                if (!source.visible) continue;
+                document.getElementById('list').innerHTML += '<li><a href="list.html#'+source.name+'">'+source.text+'</a></li>';
             }
         }))
     </script>

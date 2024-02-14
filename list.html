@@ -82,8 +82,8 @@
     <script>
         fetch('sources.json').then(res => res.json().then(sources => {
             var source = sources.find(d => d.name == location.hash.replace('#', ''));
-            document.getElementById('title').innerText = source.year+'年'+source.month+'月';
-            document.title = source.year+'年'+source.month+'月の地震一覧 - 計測震度データベース';
+            document.getElementById('title').innerText = source.text;
+            document.title = source.text+' - 計測震度データベース';
             fetch(source.path).then(res => res.json().then(quakes => {
             for (const quake of quakes) {
                 document.getElementById('table').innerHTML += '<tr onclick="location.href=\'view.html#'+source.name+'.' + quake.id + '\';"><td>' + quake.days + '日' + quake.hours + '時' + quake.minutes + '分</td><td>' + quake.epicentername + '</td><td>' + quake.depth + '</td><td>M' + quake.magnitude + '</td><td>' + toIntText(Object.entries(quake.int)[0][1]) + '</td></tr>';
