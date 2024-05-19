@@ -65,14 +65,14 @@
             if (document.getElementById('input').value.includes('://www.data.jma.go.jp/svd/eqdb/data/shindo/') && document.getElementById('input').value.includes('#')) {
                 if (document.getElementById('input').value.split('#')[1].length == 14) {
                     fetch('sources.json').then(res => res.json().then(sources => {
-                        var source = sources.find(d => d.name == document.getElementById('input').value.split('#')[1].substring(0, 6) && d.dbid == true);
+                        var source = sources.find(d => d.name.replace('_over_4', '') == document.getElementById('input').value.split('#')[1].substring(0, 6) && d.dbid == true); //一時的な対応
                         if (source) {
-                            fetch('./tags/'+source.path).then(res => res.json().then(quakes => {
-                                var quake = quakes.find(d => d.id == document.getElementById('input').value.split('#')[1]);
+                            fetch(source.path).then(res => res.json().then(quakes => {
+                                var quake = quakes.find(d => d.dbid == document.getElementById('input').value.split('#')[1]);
                                 if (quake) {
-                                    location.href = 'view.html#'+quake.id;
+                                    location.href = 'view.html#'+source.name+'.'+quake.id;
                                 } else {
-                                    showAlert('対象地震のデータが見つかりませんでした')
+                                    showAlert('対象地震のデータが見つかりませんでした'+(source.name.includes('_over_4')?'<br>※現在、2024年1月の最大震度4未満の地震ではこの機能は利用できなくなっています。ご了承ください。':''))
                                 }
                             }))
                         } else {

@@ -49,6 +49,10 @@
 
         <h1 class="uk-heading-divider" id="title"></h1>
 
+        <div class="uk-alert-danger" uk-alert>
+            <p>データ容量の関係上、2024年1月のデータがブラウザで表示できない可能性があります。<br>現在対応中ですので、しばらくお待ち下さい。<br><a href="list.html#202401_over_4">別途最大震度4以上の計65地震のリストを公開していますので、よろしければお使いください。</a></p>
+        </div>
+
         <div class="uk-overflow-auto">
             <table class="uk-table uk-table-divider uk-table-small uk-table-hover">
                 <thead>
@@ -63,9 +67,6 @@
                 <tbody id="table">
                 </tbody>
             </table>
-            <ul class="uk-pagination" uk-margin id="pagination">
-                <!-- <li><a href="#">1</a></li> -->
-            </ul>
         </div>
         <p class="uk-text-muted">
             Copyright 2023-2024 iku55. Source codes are licensed under the MIT License.<br>
@@ -79,45 +80,16 @@
     <script src="js/uikit.min.js"></script>
     <script src="js/uikit-icons.min.js"></script>
     <script>
-        var quakes;
         fetch('sources.json').then(res => res.json().then(sources => {
             var source = sources.find(d => d.name == location.hash.replace('#', ''));
             document.getElementById('title').innerText = source.text;
             document.title = source.text+' - 計測震度データベース';
-            fetch('./tags/'+source.path).then(res => res.json().then(data => {
-                quakes = data;
-                document.getElementById('pagination').innerHTML += '<li><a id="prvbtn" class="uk-disabled"><span uk-pagination-previous></span></a></li>';
-                for (let i = 0; i < Math.ceil(quakes.length/200); i++) {
-                    document.getElementById('pagination').innerHTML += `<li><a onclick="list(${i*200}, 200);">${i+1}</a></li>`;
-                }
-                document.getElementById('pagination').innerHTML += '<li><a id="nextbtn"><span uk-pagination-next></span></a></li>';
-                list(0,200)
-        }))
-        }))
-        function list(start, limit) {
-            document.getElementById('table').innerHTML = '';
-            if (document.getElementsByClassName('uk-active').length) document.getElementsByClassName('uk-active')[0].setAttribute('class', '');
-            if (start !== 0) {
-                document.getElementById('prvbtn').setAttribute('onclick', `list(${start-limit>0?start-limit:0}, ${limit});`);
-                document.getElementById('prvbtn').setAttribute('class', '');
-            } else {
-                document.getElementById('prvbtn').setAttribute('onclick', '');
-                document.getElementById('prvbtn').setAttribute('class', 'uk-disabled');
-            }
-            var count = 0;
+            fetch(source.path).then(res => res.json().then(quakes => {
             for (const quake of quakes) {
-                if (start<=count && start+limit>=count) document.getElementById('table').innerHTML += '<tr onclick="location.href=\'view.html#'+quake.id + '\';"><td>' + new Date(quake.time).toLocaleString() +'</td><td>' + quake.name + '</td><td>' + quake.depth + '</td><td>M' + quake.mag + '</td><td>' + toIntText(quake.maxint) + '</td></tr>';
-                count++;
+                document.getElementById('table').innerHTML += '<tr onclick="location.href=\'view.html#'+source.name+'.' + quake.id + '\';"><td>' + quake.days + '日' + quake.hours + '時' + quake.minutes + '分</td><td>' + quake.epicentername + '</td><td>' + quake.depth + '</td><td>M' + quake.magnitude + '</td><td>' + toIntText(Object.entries(quake.int)[0][1]) + '</td></tr>';
             }
-            if (count > start+limit) {
-                document.getElementById('nextbtn').setAttribute('onclick', `list(${start+limit}, ${limit});`);
-                document.getElementById('nextbtn').setAttribute('class', '');
-            } else {
-                document.getElementById('nextbtn').setAttribute('onclick', '');
-                document.getElementById('nextbtn').setAttribute('class', 'uk-disabled');
-            }
-            document.getElementById('pagination').children[Math.floor(start/limit)+1].setAttribute('class', 'uk-active');
-        }
+        }))
+        }))
         
         function toIntText(int) {
             if (int < 0.5) {return '<span class="uk-label">震度０</span>';

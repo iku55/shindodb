@@ -26,8 +26,8 @@ const initMap = () => {
 const getQuake = () => {
     return new Promise((resolve, reject) => {
         console.time('getQuake');
-        fetch('./data/' + location.hash.replace('#', '') + '.json').then(res => res.json().then(data => {
-            quake = data
+        fetch(location.hash.split('.')[0].replace('#', '') + '.json').then(res => res.json().then(quakes => {
+            quake = quakes.find(d => d.id == location.hash.split('.')[1]);
             var lng = quake.longitude.replace('°', '/').replace('’', '/').split('/');
             var lat = quake.latitude.replace('°', '/').replace('’', '/').split('/');
 
@@ -44,7 +44,7 @@ const getSources = () => {
     return new Promise((resolve, reject) => {
         console.time('getSources');
         fetch('sources.json').then(res => res.json().then(sources => {
-            source = sources.find(d => d.name == location.hash.replace('#', '').substring(0,6));
+            source = sources.find(d => d.name == location.hash.split('.')[0].replace('#', ''));
             map.addControl(new maplibregl.AttributionControl({
                 customAttribution: 'カラースキーム: '+(document.cookie.includes('icon=kmoni')?'<a href="https://github.com/ingen084/KyoshinShindoColorMap">ingen084/KyoshinShindoColorMap</a>':'気象庁')+' | 震度データ: <a href="' + source.source.link + '">' + source.source.name + '</a>'
             }));

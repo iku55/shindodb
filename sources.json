@@ -286,9 +286,9 @@
         }
     },
     {
-        "text": "2024年1月",
+        "text": "【容量注意】2024年1月(全地震) ※ブラウザがクラッシュする可能性があるため非推奨",
         "visible": true,
-        "dbid": true,
+        "dbid": false,
         "path": "202401.json",
         "name": "202401",
         "year": "2024",
@@ -299,16 +299,16 @@
         }
     },
     {
-        "text": "2024年2月",
+        "text": "2024年1月(最大震度4以上)",
         "visible": true,
         "dbid": true,
-        "path": "202402.json",
-        "name": "202402",
+        "path": "202401_over_4.json",
+        "name": "202401_over_4",
         "year": "2024",
-        "month": "2",
+        "month": "1",
         "source": {
-            "name": "気象庁 報道発表(2024年3月)",
-            "link": "https://www.jma.go.jp/jma/press/2403/08a/2402felt-eq.pdf"
+            "name": "気象庁 報道発表(2024年2月)",
+            "link": "https://www.jma.go.jp/jma/press/2402/08a/2401felt-eq.pdf"
         }
     }
 ]
