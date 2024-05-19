@@ -1,5 +1,7 @@
 function getStationData(date) {
-    if (date.getTime() >= new Date('2024-01-10T03:00:00.000Z').getTime()) {
+    if (date.getTime() >= new Date('2024-03-14T03:00:00.000Z').getTime()) {
+        return fetch('https://raw.githubusercontent.com/iku55/jma_int_stations/main/history/20240314.json');
+    } else if (date.getTime() >= new Date('2024-01-10T03:00:00.000Z').getTime()) {
         return fetch('https://raw.githubusercontent.com/iku55/jma_int_stations/main/history/20240110.json');
     } else if (date.getTime() >= new Date('2023-07-13T03:00:00.000Z').getTime()) {
         return fetch('https://raw.githubusercontent.com/iku55/jma_int_stations/main/history/20230713.json');
