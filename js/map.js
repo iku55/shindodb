@@ -151,6 +151,26 @@ const setSideButtons = () => {
         document.getElementById('listbtn').setAttribute('href', 'list.html#' + source.name)
         document.getElementById('dbbtn').setAttribute('href', 'https://www.data.jma.go.jp/svd/eqdb/data/shindo/index.html#' + quake.dbid)
         console.timeEnd('setSideButtons');
+        resolve()
+    });
+}
+
+// 震度観測点データ取得
+const getNotes = () => {
+    return new Promise((resolve, reject) => {
+        console.time('getNotes');
+        fetch('notes.json').then(res => res.json().then(data => {
+            if (data.notes[quake.dbid]) {
+                const note = data.notes[quake.dbid];
+                document.getElementById('notes').innerHTML = `<div uk-alert>
+                <h3><span class="uk-text-small uk-text-muted">補足情報</span> ${note.title?note.title:''}</h3>
+                <p>${note.content}</p>
+                ${note.links.map(a => {return `<a href="${a[1]}" target="_blank">${a[0]}</a>`}).join('<br>')}
+            </div>
+                `
+            }
+            resolve();
+        }))
     });
 }
 
@@ -216,4 +236,5 @@ initMap()
     .then(getStationsData)
     .then(drawEpicenter)
     .then(drawPoints)
-    .then(setSideButtons);
+    .then(setSideButtons)
+    .then(getNotes);

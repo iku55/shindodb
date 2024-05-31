@@ -1,0 +1,90 @@
+{
+    "notes": {
+        "20220308015850": {
+            "title": "",
+            "content": "地震波検知から7.5秒後の01時59分01.2秒に緊急地震速報(警報)を石川県能登に発表。",
+            "links": [
+                ["緊急地震速報の発表詳細(気象庁)", "https://www.data.jma.go.jp/eew/data/nc/pub_hist/2022/03/20220308015853/content/content_out.html"]
+            ]
+        },
+        "20220316233427": {
+            "content": "地震波検知から15.9秒後の23時34分52.5秒に緊急地震速報(警報)を発表。<br>約2分後に福島県沖で最大震度6強の地震が発生。",
+            "links": [
+                ["緊急地震速報の発表詳細(気象庁)", "https://www.data.jma.go.jp/eew/data/nc/pub_hist/2022/03/20220316233436/content/content_out.html"]
+            ]
+        },
+        "20220316233632": {
+            "content": "地震波検知から9.6秒後の23時36分55.6秒に緊急地震速報(警報)の初報を発表。<br>津波注意報を23時39分に発表。31cmの津波を観測。<br>宮城県北部で最大長周期地震動階級4を観測。<br>死者 4人、負傷者 247人<br>住家全壊 217棟、住家半壊 4,556棟、住家一部破損 52,162棟など (令和４年11月18日現在)",
+            "links": [
+                ["緊急地震速報の発表詳細(気象庁)", "https://www.data.jma.go.jp/eew/data/nc/pub_hist/2022/03/20220316233646/content/content_out.html"],
+                ["長周期地震動に関する情報(気象庁)", "https://www.data.jma.go.jp/eew/data/ltpgm_explain/data/past/20220316233646/index.html"],
+                ["津波注意報の検証(気象庁)", "https://www.data.jma.go.jp/eqev/data/tsunamihyoka/20220316fukusimaken-oki/index.html"]
+            ]
+        },
+        "20220316234556": {
+            "content": "地震波検知から11.8秒後の23時46分23.6秒に緊急地震速報(警報)を宮城県南部、福島県中通り、福島県浜通りに発表。",
+            "links": [
+                ["緊急地震速報の発表詳細(気象庁)", "https://www.data.jma.go.jp/eew/data/nc/pub_hist/2022/03/20220316234611/content/content_out.html"]
+            ]
+        },
+        "20220318232516": {
+            "content": "地震波検知から5.1秒後の23時25分25.4秒に緊急地震速報(警報)を岩手県沿岸北部、青森県三八上北、岩手県内陸北部に発表。",
+            "links": [
+                ["緊急地震速報の発表詳細(気象庁)", "https://www.data.jma.go.jp/eew/data/nc/pub_hist/2022/03/20220318232520/content/content_out.html"]
+            ]
+        },
+        "20220323092356": {
+            "content": "地震波検知から8.8秒後の09時24分08.2秒に緊急地震速報(警報)を石川県能登に発表。",
+            "links": [
+                ["緊急地震速報の発表詳細(気象庁)", "https://www.data.jma.go.jp/eew/data/nc/pub_hist/2022/03/20220323092359/content/content_out.html"]
+            ]
+        },
+        "20220509152302": {
+            "content": "地震波検知から10.6秒後の15時23分26.5秒に緊急地震速報(警報)を沖縄県与那国島に発表。",
+            "links": [
+                ["緊急地震速報の発表詳細(気象庁)", "https://www.data.jma.go.jp/eew/data/nc/pub_hist/2022/05/20220509152315/content/content_out.html"]
+            ]
+        },
+        "20220522122411": {
+            "content": "地震波検知から20.0秒後の12時24分34.2秒に緊急地震速報(警報)を福島県浜通り、茨城県北部、福島県中通りに発表。",
+            "links": [
+                ["緊急地震速報の発表詳細(気象庁)", "https://www.data.jma.go.jp/eew/data/nc/pub_hist/2022/05/20220522122414/content/content_out.html"]
+            ]
+        },
+        "20220619150807": {
+            "content": "地震波検知から8.6秒後の15時08分19.1秒に緊急地震速報(警報)を発表。<br>20日にも石川県能登地方で最大震度5強の地震発生。<br>負傷者 7人、住家一部破損 62棟(令和４年11月18日現在)",
+            "links": [
+                ["緊急地震速報の発表詳細(気象庁)", "https://www.data.jma.go.jp/eew/data/nc/pub_hist/2022/06/20220619150810/content/content_out.html"]
+            ]
+        },
+        "20220620103134": {
+            "content": "地震波検知から8.8秒後の10時31分46.0秒に緊急地震速報(警報)を発表。<br>19日にも石川県能登地方で最大震度6弱の地震発生。<br>負傷者 7人、住家一部破損 62棟(令和４年11月18日現在)",
+            "links": [
+                ["緊急地震速報の発表詳細(気象庁)", "https://www.data.jma.go.jp/eew/data/nc/pub_hist/2022/06/20220620103137/content/content_out.html"]
+            ]
+        },
+        "20220811005300": {
+            "content": "地震波検知から14.7秒後の00時53分24.7秒に緊急地震速報(警報)を発表。",
+            "links": [
+                ["緊急地震速報の発表詳細(気象庁)", "https://www.data.jma.go.jp/eew/data/nc/pub_hist/2022/08/20220811005302/content/content_out.html"]
+            ]
+        },
+        "20221002000232": {
+            "content": "地震波検知から4.5秒後の00時02分44.5秒に緊急地震速報(警報)を発表。",
+            "links": [
+                ["緊急地震速報の発表詳細(気象庁)", "https://www.data.jma.go.jp/eew/data/nc/pub_hist/2022/10/20221002000240/content/content_out.html"]
+            ]
+        },
+        "20221109174012": {
+            "content": "負傷者 1人(令和４年11月16日現在)",
+            "links": [
+            ]
+        },
+        "20221114222758": {
+            "content": "地震波検知から10.1秒後の22時28分11.8秒に緊急地震速報(警報)を発表。",
+            "links": [
+                ["緊急地震速報の発表詳細(気象庁)", "https://www.data.jma.go.jp/eew/data/nc/pub_hist/2022/11/20221114222801/content/content_out.html"]
+            ]
+        }
+    }
+}
