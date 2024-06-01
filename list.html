@@ -53,6 +53,7 @@
             <table class="uk-table uk-table-divider uk-table-small uk-table-hover">
                 <thead>
                     <tr>
+                        <th>地震番号</th>
                         <th>発生時刻</th>
                         <th>震央地名</th>
                         <th>深さ</th>
@@ -87,28 +88,16 @@
             document.title = source.text+' - 計測震度データベース';
             fetch(source.path).then(res => res.json().then(data => {
                 quakes = data.map(d => {d.maxInt = Object.entries(d.int)[0][1]; d.int = null; return d;});
+                document.getElementById('title').innerText = source.text+' (計 '+quakes.length+'地震)';
                 document.getElementById('pagination').innerHTML += '<li><a id="prvbtn" class="uk-disabled"><span uk-pagination-previous></span></a></li>';
                 for (let i = 0; i < Math.ceil(quakes.length/200); i++) {
                     document.getElementById('pagination').innerHTML += `<li><a onclick="list(${i*200}, 200);">${i+1}</a></li>`;
                 }
                 document.getElementById('pagination').innerHTML += '<li><a id="nextbtn"><span uk-pagination-next></span></a></li>';
                 list(0,200)
-                // for (const quake of quakes) {
-                //     document.getElementById('table').innerHTML += '<tr onclick="location.href=\'view.html#'+source.name+'.' + quake.id + '\';"><td>' + quake.days + '日' + quake.hours + '時' + quake.minutes + '分</td><td>' + quake.epicentername + '</td><td>' + quake.depth + '</td><td>M' + quake.magnitude + '</td><td>' + toIntText(Object.entries(quake.int)[0][1]) + '</td></tr>';
-                // }
             }))
         }))
 
-        // fetch('./tags/'+source.path).then(res => res.json().then(data => {
-        //         quakes = data;
-        //         document.getElementById('pagination').innerHTML += '<li><a id="prvbtn" class="uk-disabled"><span uk-pagination-previous></span></a></li>';
-        //         for (let i = 0; i < Math.ceil(quakes.length/200); i++) {
-        //             document.getElementById('pagination').innerHTML += `<li><a onclick="list(${i*200}, 200);">${i+1}</a></li>`;
-        //         }
-        //         document.getElementById('pagination').innerHTML += '<li><a id="nextbtn"><span uk-pagination-next></span></a></li>';
-        //         list(0,200)
-        // }))
-        // }))
         function list(start, limit) {
             document.getElementById('table').innerHTML = '';
             if (document.getElementsByClassName('uk-active').length) document.getElementsByClassName('uk-active')[0].setAttribute('class', '');
@@ -122,7 +111,7 @@
             var count = 0;
             for (const quake of quakes) {
                 // if (start<=count && start+limit>=count) document.getElementById('table').innerHTML += '<tr onclick="location.href=\'view.html#'+quake.id + '\';"><td>' + new Date(quake.time).toLocaleString() +'</td><td>' + quake.name + '</td><td>' + quake.depth + '</td><td>M' + quake.mag + '</td><td>' + toIntText(quake.maxint) + '</td></tr>';
-                if (start<=count && start+limit>=count) document.getElementById('table').innerHTML += '<tr onclick="location.href=\'view.html#'+source.name+'.' + quake.id + '\';"><td>' + quake.days + '日' + quake.hours + '時' + quake.minutes + '分</td><td>' + quake.epicentername + '</td><td>' + quake.depth + '</td><td>M' + quake.magnitude + '</td><td>' + toIntText(quake.maxInt) + '</td></tr>';
+                if (start<=count && start+limit>count) document.getElementById('table').innerHTML += '<tr onclick="location.href=\'view.html#'+source.name+'.' + quake.id + '\';"><td>' + quake.id + '</td><td>' + quake.days + '日' + quake.hours + '時' + quake.minutes + '分</td><td>' + quake.epicentername + '</td><td>' + quake.depth + '</td><td>M' + quake.magnitude + '</td><td>' + toIntText(quake.maxInt) + '</td></tr>';
                 count++;
             }
             if (count > start+limit) {
