@@ -336,5 +336,18 @@
             "name": "気象庁 報道発表(2024年5月)",
             "link": "https://www.jma.go.jp/jma/press/2405/10a/2404felt-eq.pdf"
         }
+    },
+    {
+        "text": "2024年5月",
+        "visible": true,
+        "dbid": true,
+        "path": "202405.json",
+        "name": "202405",
+        "year": "2024",
+        "month": "5",
+        "source": {
+            "name": "2024年5月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202405/202405furoku_1.pdf"
+        }
     }
 ]
