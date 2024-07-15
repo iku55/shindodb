@@ -164,6 +164,18 @@
             "links": [
                 ["緊急地震速報の発表詳細(気象庁)", "https://www.data.jma.go.jp/eew/data/nc/pub_hist/2023/05/20230530174902/reachtime/reachtime.html"]
             ]
+        },
+        "20240603063140": {
+            "content": "地震波検知から4.8秒後の06時31分47.0秒に緊急地震速報(警報)を発表。",
+            "links": [
+                ["緊急地震速報の発表詳細(気象庁)", "https://www.data.jma.go.jp/eew/data/nc/pub_hist/2024/06/20240603063142/reachtime/reachtime.html"]
+            ]
+        },
+        "20240603064020": {
+            "content": "地震波検知から9.0秒後の06時40分31.8秒に緊急地震速報(警報)を発表。",
+            "links": [
+                ["緊急地震速報の発表詳細(気象庁)", "https://www.data.jma.go.jp/eew/data/nc/pub_hist/2024/06/20240603064022/reachtime/reachtime.html"]
+            ]
         }
     }
 }
