@@ -388,5 +388,31 @@
             "name": "気象庁 報道発表(2024年9月)",
             "link": "https://www.jma.go.jp/jma/press/2409/09a/2408felt-eq.pdf"
         }
+    },
+    {
+        "text": "2024年9月",
+        "visible": true,
+        "dbid": true,
+        "path": "202409.json",
+        "name": "202409",
+        "year": "2024",
+        "month": "9",
+        "source": {
+            "name": "気象庁 報道発表(2024年10月)",
+            "link": "https://www.jma.go.jp/jma/press/2410/08a/2409felt-eq.pdf"
+        }
+    },
+    {
+        "text": "2024年10月",
+        "visible": true,
+        "dbid": true,
+        "path": "202410.json",
+        "name": "202410",
+        "year": "2024",
+        "month": "10",
+        "source": {
+            "name": "気象庁 報道発表(2024年11月)",
+            "link": "https://www.jma.go.jp/jma/press/2411/11b/2410felt-eq.pdf"
+        }
     }
 ]
