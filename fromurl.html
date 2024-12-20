@@ -70,6 +70,10 @@
                             fetch(source.path).then(res => res.json().then(quakes => {
                                 var quake = quakes.find(d => d.dbid == document.getElementById('input').value.split('#')[1]);
                                 if (quake) {
+                                    gtag('event', 'from_url', {
+                                        earthquake_id: quake.dbid,
+                                        send_to: 'G-GRQELX997W'
+                                    });
                                     location.href = 'view.html#'+source.name+'.'+quake.id;
                                 } else {
                                     showAlert('対象地震のデータが見つかりませんでした')

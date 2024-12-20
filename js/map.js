@@ -237,4 +237,10 @@ initMap()
     .then(drawEpicenter)
     .then(drawPoints)
     .then(setSideButtons)
-    .then(getNotes);
+    .then(getNotes)
+    .then(() => {
+        gtag('event', 'view_earthquake', {
+            earthquake_id: quake.dbid,
+            send_to: 'G-GRQELX997W'
+        });
+    });

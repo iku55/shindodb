@@ -96,6 +96,10 @@
                 document.getElementById('pagination').innerHTML += '<li><a id="nextbtn"><span uk-pagination-next></span></a></li>';
                 list(0,200)
             }))
+            gtag('event', 'view_month', {
+                month: source.name,
+                send_to: 'G-GRQELX997W'
+            });
         }))
 
         function list(start, limit) {
