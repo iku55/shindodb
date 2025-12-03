@@ -54,7 +54,11 @@ function intensityToLabel(classText) {
         '７': { background: '#b40068', color: 'white', text: '震度７' }
     };
 
-    const style = styles[classText] || styles['７'];
+    const style = styles[classText];
+    if (!style) {
+        console.warn('Unknown intensity class: ' + classText + ', defaulting to 震度７');
+        return '<span class="uk-label" style="background: #b40068; color: white;">震度７</span>';
+    }
     
     if (classText === '０') {
         return '<span class="uk-label">' + style.text + '</span>';
@@ -75,11 +79,14 @@ function intensityValueToLabel(int) {
 /**
  * Parse coordinate string in degrees and minutes format to decimal degrees
  * 度分形式の座標文字列を十進度に変換
+ * Handles degree symbol (°, U+00B0) and right single quotation mark (', U+2019)
  * @param {string} coordStr - Coordinate string (e.g., "35°30.5'N")
  * @returns {number} Decimal degrees value
  */
 function parseCoordinate(coordStr) {
-    const parts = coordStr.replace('\u00b0', '/').replace('\u2019', '/').split('/');
+    // Match degree symbol (\u00b0, °) and right single quotation mark (\u2019, ')
+    // These are the specific characters used in JMA data
+    const parts = coordStr.replace(/[\u00b0\u00ba]/g, '/').replace(/[\u2019\u0027\u2032]/g, '/').split('/');
     return Number(parts[0]) + (Number(parts[1]) / 60);
 }
 
@@ -215,8 +222,10 @@ function filterByRegion(quakes, regionName) {
  */
 function sortByDateDesc(quakes) {
     return [...quakes].sort(function(a, b) {
-        const dateA = a.days + a.hours + a.minutes;
-        const dateB = b.days + b.hours + b.minutes;
+        // Zero-pad days, hours, minutes for correct string comparison
+        const padLeft = function(val) { return String(val).padStart(2, '0'); };
+        const dateA = padLeft(a.days) + padLeft(a.hours) + padLeft(a.minutes);
+        const dateB = padLeft(b.days) + padLeft(b.hours) + padLeft(b.minutes);
         return dateB.localeCompare(dateA);
     });
 }
@@ -276,13 +285,14 @@ function generateViewUrl(sourceName, quakeId) {
 /**
  * Clean station name by removing markers
  * 観測点名からマーカーを削除してクリーンにする
+ * Removes asterisk marker (＊) and historical number suffix (旧N)
  * @param {string} stationName - Station name (e.g., "輪島市鳳至町＊")
  * @returns {string} Cleaned station name
  */
 function cleanStationName(stationName) {
     return stationName
         .replace('＊', '')
-        .replace(/\(旧[０１２３４５６７８９]*\)/, '');
+        .replace(/\(旧[０１２３４５６７８９0-9]*\)/, '');
 }
 
 /**
