@@ -79,6 +79,7 @@
 
     <script src="js/uikit.min.js"></script>
     <script src="js/uikit-icons.min.js"></script>
+    <script src="js/utils.js"></script>
     <script>
         var quakes;
         var source;
@@ -128,18 +129,9 @@
             document.getElementById('pagination').children[Math.floor(start/limit)+1].setAttribute('class', 'uk-active');
         }
         
+        // Uses utility function from utils.js
         function toIntText(int) {
-            if (int < 0.5) {return '<span class="uk-label">震度０</span>';
-            } else if (int < 1.5) {return '<span class="uk-label" style="background: #f2f2ff; color: black;">震度１</span>';
-            } else if (int < 2.5) {return '<span class="uk-label" style="background: #00aaff; color: black;">震度２</span>';
-            } else if (int < 3.5) {return '<span class="uk-label" style="background: #0041ff; color: white;">震度３</span>';
-            } else if (int < 4.5) {return '<span class="uk-label" style="background: #fae696; color: black;">震度４</span>';
-            } else if (int < 5.0) {return '<span class="uk-label" style="background: #ffe600; color: black;">震度５弱</span>';
-            } else if (int < 5.5) {return '<span class="uk-label" style="background: #ff9900; color: black;">震度５強</span>';
-            } else if (int < 6.0) {return '<span class="uk-label" style="background: #ff2800; color: white;">震度６弱</span>';
-            } else if (int < 6.5) {return '<span class="uk-label" style="background: #a50021; color: white;">震度６強</span>';
-            } else  {return '<span class="uk-label" style="background: #b40068; color: white;">震度７</span>';
-            }
+            return intensityValueToLabel(int);
         }
     </script>
 </body>
