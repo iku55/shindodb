@@ -28,11 +28,8 @@ const getQuake = () => {
         console.time('getQuake');
         fetch(location.hash.split('.')[0].replace('#', '') + '.json').then(res => res.json().then(quakes => {
             quake = quakes.find(d => d.id == location.hash.split('.')[1]);
-            var lng = quake.longitude.replace('°', '/').replace('’', '/').split('/');
-            var lat = quake.latitude.replace('°', '/').replace('’', '/').split('/');
-
-            longitude = Number(lng[0]) + (Number(lng[1]) / 60);
-            latitude = Number(lat[0]) + (Number(lat[1]) / 60);
+            longitude = parseLongitude(quake.longitude);
+            latitude = parseLatitude(quake.latitude);
             console.timeEnd('getQuake');
             resolve();
         }))
@@ -87,11 +84,8 @@ const drawEpicenter = () => {
             for (const q of quake.earthquakes) {
                 document.getElementById('table-earthquakes').innerHTML += '<tr><td>' + source.year + '/' + source.month + '/' + q.days + ' ' + q.hours + ':' + q.minutes + '</td><td>' + q.epicentername + '</td><td>' + q.latitude + '</td><td>' + q.longitude + '</td><td>' + q.depth + '</td><td>' + q.magnitude + '</td></tr>'
                 
-                var lng = q.longitude.replace('°', '/').replace('’', '/').split('/');
-                var lat = q.latitude.replace('°', '/').replace('’', '/').split('/');
-
-                lng = Number(lng[0]) + (Number(lng[1]) / 60);
-                lat = Number(lat[0]) + (Number(lat[1]) / 60);
+                var lng = parseLongitude(q.longitude);
+                var lat = parseLatitude(q.latitude);
                 
                 new maplibregl.Marker(makeMarkerIcon('images/epicenter_white.png', 30, 30, true, null, 70))
                     .setLngLat([lng, lat])
@@ -189,42 +183,14 @@ function makeMarkerIcon(img, w, h, cursor, tooltip, zindex) {
 }
 
 // 計測震度から震度階級テキストに変換
+// Uses utility function from utils.js
 function toIntText(int) {
-    if (int < 0.5) {
-        return '０';
-    } else if (int < 1.5) {
-        return '１';
-    } else if (int < 2.5) {
-        return '２';
-    } else if (int < 3.5) {
-        return '３';
-    } else if (int < 4.5) {
-        return '４';
-    } else if (int < 5.0) {
-        return '５弱';
-    } else if (int < 5.5) {
-        return '５強';
-    } else if (int < 6.0) {
-        return '６弱';
-    } else if (int < 6.5) {
-        return '６強';
-    } else {
-        return '７';
-    }
+    return intensityToClassText(int);
 }
 
+// Uses utility function from utils.js
 function toIntLabel(int) {
-    if (int == '０') {return '<span class="uk-label">震度０</span>';
-    } else if (int == '１') {return '<span class="uk-label" style="background: #f2f2ff; color: black;">震度１</span>';
-    } else if (int == '２') {return '<span class="uk-label" style="background: #00aaff; color: black;">震度２</span>';
-    } else if (int == '３') {return '<span class="uk-label" style="background: #0041ff; color: white;">震度３</span>';
-    } else if (int == '４') {return '<span class="uk-label" style="background: #fae696; color: black;">震度４</span>';
-    } else if (int == '５弱') {return '<span class="uk-label" style="background: #ffe600; color: black;">震度５弱</span>';
-    } else if (int == '５強') {return '<span class="uk-label" style="background: #ff9900; color: black;">震度５強</span>';
-    } else if (int == '６弱') {return '<span class="uk-label" style="background: #ff2800; color: white;">震度６弱</span>';
-    } else if (int == '６強') {return '<span class="uk-label" style="background: #a50021; color: white;">震度６強</span>';
-    } else  {return '<span class="uk-label" style="background: #b40068; color: white;">震度７</span>';
-    }
+    return intensityToLabel(int);
 }
 
 
