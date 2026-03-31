@@ -288,7 +288,7 @@
     {
         "text": "2024年1月",
         "visible": true,
-        "dbid": false,
+        "dbid": true,
         "path": "202401.json",
         "name": "202401",
         "year": "2024",
@@ -426,6 +426,201 @@
         "source": {
             "name": "気象庁 報道発表(2024年12月)",
             "link": "https://www.jma.go.jp/jma/press/2412/09a/2411felt-eq.pdf"
+        }
+    },
+    {
+        "text": "2024年12月",
+        "visible": true,
+        "dbid": true,
+        "path": "202412.json",
+        "name": "202412",
+        "year": "2024",
+        "month": "12",
+        "source": {
+            "name": "2024年12月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202412/202412furoku_1.pdf"
+        }
+    },
+    {
+        "text": "2025年1月",
+        "visible": true,
+        "dbid": true,
+        "path": "202501.json",
+        "name": "202501",
+        "year": "2025",
+        "month": "1",
+        "source": {
+            "name": "2025年1月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202501/202501furoku_1.pdf"
+        }
+    },
+    {
+        "text": "2025年2月",
+        "visible": true,
+        "dbid": true,
+        "path": "202502.json",
+        "name": "202502",
+        "year": "2025",
+        "month": "2",
+        "source": {
+            "name": "2025年2月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202502/202502furoku_1.pdf"
+        }
+    },
+    {
+        "text": "2025年3月",
+        "visible": true,
+        "dbid": true,
+        "path": "202503.json",
+        "name": "202503",
+        "year": "2025",
+        "month": "3",
+        "source": {
+            "name": "2025年3月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202503/202503furoku_1.pdf"
+        }
+    },
+    {
+        "text": "2025年4月",
+        "visible": true,
+        "dbid": true,
+        "path": "202504.json",
+        "name": "202504",
+        "year": "2025",
+        "month": "4",
+        "source": {
+            "name": "2025年4月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202504/202504furoku_1.pdf"
+        }
+    },
+    {
+        "text": "2025年5月",
+        "visible": true,
+        "dbid": true,
+        "path": "202505.json",
+        "name": "202505",
+        "year": "2025",
+        "month": "5",
+        "source": {
+            "name": "2025年5月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202505/202505furoku_1.pdf"
+        }
+    },
+    {
+        "text": "2025年6月",
+        "visible": true,
+        "dbid": true,
+        "path": "202506.json",
+        "name": "202506",
+        "year": "2025",
+        "month": "6",
+        "source": {
+            "name": "2025年6月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202506/202506furoku_1.pdf"
+        }
+    },
+    {
+        "text": "2025年7月",
+        "visible": true,
+        "dbid": true,
+        "path": "202507.json",
+        "name": "202507",
+        "year": "2025",
+        "month": "7",
+        "source": {
+            "name": "2025年7月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202507/202507furoku_1.pdf"
+        }
+    },
+    {
+        "text": "2025年8月",
+        "visible": true,
+        "dbid": true,
+        "path": "202508.json",
+        "name": "202508",
+        "year": "2025",
+        "month": "8",
+        "source": {
+            "name": "2025年8月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202508/202508furoku_1.pdf"
+        }
+    },
+    {
+        "text": "2025年9月",
+        "visible": true,
+        "dbid": true,
+        "path": "202509.json",
+        "name": "202509",
+        "year": "2025",
+        "month": "9",
+        "source": {
+            "name": "2025年9月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202509/202509furoku_1.pdf"
+        }
+    },
+    {
+        "text": "2025年10月",
+        "visible": true,
+        "dbid": true,
+        "path": "202510.json",
+        "name": "202510",
+        "year": "2025",
+        "month": "10",
+        "source": {
+            "name": "2025年10月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202510/202510furoku_1.pdf"
+        }
+    },
+    {
+        "text": "2025年11月",
+        "visible": true,
+        "dbid": true,
+        "path": "202511.json",
+        "name": "202511",
+        "year": "2025",
+        "month": "11",
+        "source": {
+            "name": "2025年11月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202511/202511furoku_1.pdf"
+        }
+    },
+    {
+        "text": "2025年12月",
+        "visible": true,
+        "dbid": true,
+        "path": "202512.json",
+        "name": "202512",
+        "year": "2025",
+        "month": "12",
+        "source": {
+            "name": "2025年12月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202512/202512furoku_1.pdf"
+        }
+    },
+    {
+        "text": "2026年1月",
+        "visible": true,
+        "dbid": true,
+        "path": "202601.json",
+        "name": "202601",
+        "year": "2026",
+        "month": "1",
+        "source": {
+            "name": "2026年1月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202601/202601furoku_1.pdf"
+        }
+    },
+    {
+        "text": "2026年2月",
+        "visible": true,
+        "dbid": true,
+        "path": "202602.json",
+        "name": "202602",
+        "year": "2026",
+        "month": "2",
+        "source": {
+            "name": "2026年2月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202602/202602furoku_1.pdf"
         }
     }
 ]
