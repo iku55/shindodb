@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <!-- Icons from: https://github.com/watergis/maplibre-gl-terradraw (MIT) -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地震を検索 - 計測震度データベース</title>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GRQELX997W"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-GRQELX997W');
+    </script>
+    <link rel="stylesheet" href="css/uikit.min.css" />
+    <link href='css/maplibre-gl.css' rel='stylesheet' />
+    <style>
+        html, body {
+            height: 100%;
+        }
+        #map {
+            height: 100%;
+        }
+        /* パネルの見た目を微調整 */
+        .search-panel {
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.95); /* 少しだけ透かすと地図が見えておしゃれです */
+            backdrop-filter: blur(4px); /* 背景をぼかす */
+            max-height: calc(100vh - 40px); /* 画面の高さから上下の余白(40px)を引いた分 */
+            overflow-y: auto;               /* 縦方向に溢れたらスクロール */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* スクロールバーのカスタマイズ（任意） */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ddd;
+            border-radius: 10px;
+        }
+
+        /* パネル全体の共通設定 */
+        .search-panel {
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.95); /* 少しだけ透かすと地図が見えておしゃれです */
+            backdrop-filter: blur(4px); /* 背景をぼかす */
+            overflow-y: auto;               /* 縦方向に溢れたらスクロール */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- レスポンシブ配置 --- */
+
+        /* スマホ (960px未満): 下部固定のボトムシート */
+        @media (max-width: 959px) {
+            .responsive-container {
+                position: fixed !important;
+                bottom: 0;
+                left: 0;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                z-index: 1000;
+            }
+            .search-panel {
+                max-height: 40vh; /* 画面の半分まで */
+                border-radius: 20px 20px 0 0; /* 上だけ丸める */
+                box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+            }
+        }
+
+        /* PC (960px以上): 右上固定のサイドパネル */
+        @media (min-width: 960px) {
+            .responsive-container {
+                position: absolute !important;
+                top: 20px;
+                right: 20px;
+                width: 350px !important;
+                z-index: 1000;
+            }
+            .search-panel {
+                box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+                max-height: calc(100vh - 40px); /* 画面の高さから上下の余白(40px)を引いた分 */
+            }
+        }
+        #draw-action-bar .action-btn {
+            height: 32px;
+            line-height: 30px;
+            padding: 0 12px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        #draw-action-bar .uk-card {
+            border: 1px solid rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        .action-btn.active {
+            background-color: #e0e0e0; /* 押されている感が出る色 */
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); /* 内側に影をつけて凹みを表現 */
+            border-color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div id="draw-action-bar" class="uk-position-top uk-position-fixed uk-flex uk-flex-center uk-margin-small-top" style="z-index: 2000; display: none;">
+        <div class="uk-card uk-card-default uk-card-body uk-padding-small uk-box-shadow-medium uk-border-rounded uk-flex uk-flex-middle">
+            <span class="uk-text-bold uk-text-small uk-margin-right">領域選択</span>
+            
+            <div class="uk-button-group">
+                <button id="rectangle-btn" class="uk-button uk-button-default action-btn" onclick="startDraw('rectangle')">
+                    <span uk-icon="icon: terra-rectangle; ratio: 0.8"></span> 矩形
+                </button>
+                <button id="polygon-btn" class="uk-button uk-button-default action-btn" onclick="startDraw('polygon')">
+                    <span uk-icon="icon: terra-polygon; ratio: 0.8"></span> 多角形
+                </button>
+                <button id="circle-btn" class="uk-button uk-button-default action-btn" onclick="startDraw('circle')">
+                    <span uk-icon="icon: terra-circle; ratio: 0.8"></span> 円形
+                </button>
+            </div>
+
+            <button class="uk-button uk-button-link uk-margin-small-left uk-text-meta" onclick="resetDraw()">リセット</button>
+            <button class="uk-button uk-button-small uk-button-danger uk-margin-small-left" onclick="stopDraw()">完了</button>
+        </div>
+    </div>
+    <div class="uk-position-relative uk-width-1-1" style="height: 100vh; overflow: hidden;">
+    
+        <div id="map"></div>
+
+        <div class="responsive-container">
+            <div class="uk-card uk-card-default uk-card-body uk-card-small uk-box-shadow-large search-panel">
+                <h3 class="uk-card-title uk-margin-remove-bottom">計測震度データベース検索</h3>
+                <ul class="uk-child-width-expand uk-margin-remove" uk-tab="connect: #tab-content">
+                    <li class="uk-active uk-padding-remove"><a href="#">検索条件</a></li>
+                    <li class="uk-padding-remove"><a href="#">検索結果</a></li>
+                </ul>
+                <div id="tab-content" class="uk-switcher uk-margin-small-top">
+                    <div>
+                        <form class="uk-form-stacked">
+                            <div class="uk-margin">
+                                <label class="uk-form-label" for="sort">検索結果の表示順</label>
+                                <div class="uk-form-controls">
+                                    <select class="uk-select" id="sort">
+                                        <option>発生日時の新しい順</option>
+                                        <option>発生日時の古い順</option>
+                                        <option>最大計測震度の大きい順</option>
+                                        <option>地震の規模の大きい順</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="uk-margin">
+                                <label class="uk-form-label" for="start">開始</label>
+                                <div class="uk-form-controls">
+                                    <input class="uk-input" type="datetime-local" id="start" value="2023-01-01T00:00:00">
+                                </div>
+                            </div>
+                            <div class="uk-margin">
+                                <label class="uk-form-label" for="end">終了</label>
+                                <div class="uk-form-controls">
+                                    <input class="uk-input" type="datetime-local" id="end" value="2023-06-30T23:59:59">
+                                </div>
+                            </div>
+                            <div class="uk-margin">
+                                <div class="uk-form-controls uk-grid-collapse uk-child-width-1-6 uk-text-center" style="background-color: #ffffff;" uk-grid>
+                                    <input type="button" class="uk-button uk-button-default uk-text-center uk-padding-remove" onclick="setYearRange(-1)" value="<">
+                                    <input type="button" class="uk-button uk-button-default uk-text-center uk-padding-remove" onclick="setYearRange(0)" value="今年">
+                                    <input type="button" class="uk-button uk-button-default uk-text-center uk-padding-remove" onclick="setYearRange(1)" value=">">
+                                    <input type="button" class="uk-button uk-button-default uk-text-center uk-padding-remove" onclick="setMonthRange(-1)" value="<">
+                                    <input type="button" class="uk-button uk-button-default uk-text-center uk-padding-remove" onclick="setMonthRange(0)" value="今月">
+                                    <input type="button" class="uk-button uk-button-default uk-text-center uk-padding-remove" onclick="setMonthRange(1)" value=">">
+                                </div>
+                            </div>
+                            <div class="uk-margin">
+                                <label class="uk-form-label" for="maxint">最大計測震度</label>
+                                <div class="uk-form-controls">
+                                    <div class="uk-grid-small uk-flex-middle" uk-grid>
+                                        <div class="uk-width-expand">
+                                            <input class="uk-input" type="number" id="maxint" list="maxint-presets" placeholder="数値入力または選択..." min="0" max="8" step="0.1">
+                                            <datalist id="maxint-presets">
+                                                <option value="0.5">震度1</option>
+                                                <option value="1.5">震度2</option>
+                                                <option value="2.5">震度3</option>
+                                                <option value="3.5">震度4</option>
+                                                <option value="4.5">震度5-</option>
+                                                <option value="5.0">震度5+</option>
+                                                <option value="5.5">震度6-</option>
+                                                <option value="6.0">震度6+</option>
+                                                <option value="7.5">震度7</option>
+                                            </datalist>
+                                        </div>
+                                        <div class="uk-width-auto">
+                                            <span class="uk-text-muted">以上</span>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <div class="uk-margin">
+                                <label class="uk-form-label" id="name-filter-label">震央指定</label>
+                                <div class="uk-form-controls">
+                                    <span class="uk-text" id="selected-region">指定なし</span><br>
+                                    <input type="button" class="uk-button uk-button-default" uk-toggle="target: #name-filter-modal" value="震央地名を追加" onclick="enableNameFilter()">
+                                    <input type="button" class="uk-button uk-button-default" value="領域選択" onclick="enableDrawMode()">
+                                </div>
+                            </div>
+                            <div class="uk-margin">
+                                <label class="uk-form-label">マグニチュード (M)</label>
+                                <div class="uk-form-controls">
+                                    <div class="uk-grid-small uk-flex-middle" uk-grid>
+                                        <div class="uk-width-expand">
+                                            <input class="uk-input" type="number" id="min-mag" placeholder="0.0" step="0.1">
+                                        </div>
+                                        <div class="uk-width-auto">
+                                            <span class="uk-text-muted">〜</span>
+                                        </div>
+                                        <div class="uk-width-expand">
+                                            <input class="uk-input" type="number" id="max-mag" placeholder="9.9" step="0.1">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="uk-margin">
+                                <label class="uk-form-label">震源の深さ (km)</label>
+                                <div class="uk-form-controls">
+                                    <div class="uk-grid-small uk-flex-middle" uk-grid>
+                                        <div class="uk-width-expand">
+                                            <input class="uk-input" type="number" id="min-depth" placeholder="0">
+                                        </div>
+                                        <div class="uk-width-auto">
+                                            <span class="uk-text-muted">〜</span>
+                                        </div>
+                                        <div class="uk-width-expand">
+                                            <input class="uk-input" type="number" id="max-depth" placeholder="999">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="uk-margin">
+                                <div class="uk-form-controls">
+                                    <input type="button" class="uk-button uk-button-large uk-button-primary uk-width-1-1" value="検索" onclick="searchEarthquakes()">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div>
+                        <ul class="uk-list" id="search-results">
+                        </ul>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <div id="name-filter-modal" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body">
+            <h2 class="uk-modal-title">震央地名フィルターを編集</h2>
+            <div>
+                <div id="selected-regions" class="uk-flex uk-flex-wrap uk-margin-small-bottom" style="gap: 5px;">
+                </div>
+
+                <button type="button" class="uk-button uk-button-default uk-button-small uk-margin-small-bottom" onclick="clearAllRegions()">すべて解除</button>
+
+                <div class="uk-inline uk-width-1-1">
+                    <span class="uk-form-icon" uk-icon="icon: search"></span>
+                    <input class="uk-input uk-form-small" type="text" id="region-search" placeholder="地名を検索..." oninput="filterRegionList()">
+                </div>
+
+                <div id="region-list-container" style="max-height: 200px; overflow-y: auto; border: 1px solid #eee; margin-top: 5px; background: #fff;">
+                    <ul class="uk-list uk-list-collapse uk-list-hover uk-margin-remove" id="region-list"></ul>
+                </div>
+            </div>
+            <p class="uk-text-right">
+                <button class="uk-button uk-button-primary uk-modal-close" type="button">閉じる</button>
+            </p>
+        </div>
+    </div>
+
+    <script src="js/uikit.min.js"></script>
+    <script src="js/uikit-icons.min.js"></script>
+    <script src='js/maplibre-gl.js'></script>
+    <script src="js/pmtiles.js"></script>
+    <script src="js/terra-draw.umd.js"></script>
+    <script src="js/terra-draw-maplibre-gl-adapter.umd.js"></script>
+    <script src="js/turf.min.js"></script>
+    <script>
+        let popup, popupEventId, epicenterFilterType, epicenterFilterFeature;
+        const protocol = new pmtiles.Protocol();
+        maplibregl.addProtocol("pmtiles", protocol.tile);
+        const PMTILES_URL = "https://iku55.github.io/eq-pmtiles-test/earthquake_map.pmtiles";
+        const map = new maplibregl.Map({
+            container: 'map',
+            center: [137.0, 38.0],
+            zoom: 5,
+            minZoom: 3,
+            maxZoom: 14,
+            style: './styles/style.json'
+        });
+        let draw;
+
+        map.on('load', () => {
+            // 空のGeoJSONソースを追加
+            map.addSource('earthquake-data', {
+                type: 'geojson',
+                data: { type: 'FeatureCollection', features: [] } 
+            });
+
+            // 円レイヤーを追加（設定は一度だけでOK）
+            map.addLayer({
+                id: 'earthquake-circles',
+                type: 'circle',
+                source: 'earthquake-data',
+                paint: {
+                    'circle-radius': ['get', 'circle-radius'],
+                    'circle-color': ['get', 'depth-color'],
+                    'circle-stroke-width': 1,
+                    'circle-stroke-color': '#fff'
+                }
+            });
+
+            popup = new maplibregl.Popup({
+                closeButton: false, // ホバーなので閉じるボタンは不要
+                closeOnClick: false,
+                offset: 15,
+                className: 'custom-tooltip' // CSSで装飾しやすくするため
+            });
+            map.on('mousemove', 'earthquake-circles', (e) => {
+                if (e.features.length > 0) {
+                    // カーソルをポインターに変更
+                    map.getCanvas().style.cursor = 'pointer';
+
+                    const coordinates = e.features[0].geometry.coordinates.slice();
+                    const props = e.features[0].properties;
+
+                    if (popupEventId === props.dbid) {
+                        return; // 同じ地震のポップアップが既に表示されている場合は何もしない
+                    }
+                    // UIkitのユーティリティを使ったツールチップの中身
+                    const content = `
+                        <div class="uk-card uk-card-small">
+                            <div class="uk-text-bold uk-text-small uk-margin-remove">${props.epicentername}</div>
+                            <span uk-icon="icon: clock"></span>時刻<br>
+                            ${props.year}年${props.month}月${props.days}日 ${props.hours}時${props.minutes}分ごろ<br>
+                            <span uk-icon="icon: location"></span>震源<br>
+                            M${props.magnitude} 深さ${props.depth}<br>
+                            ${toIntText(Number(Object.entries(JSON.parse(props.int))[0][1]))}
+                        </div>
+                    `;
+
+                    popupEventId = props.dbid;
+
+                    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                    }
+                    popup.setLngLat(coordinates).setHTML(content).addTo(map);
+                }
+            });
+            map.on('mouseleave', 'earthquake-circles', () => {
+                map.getCanvas().style.cursor = '';
+                popup.remove();
+                popupEventId = null;
+            });
+
+            map.on('click', 'earthquake-circles', (e) => {
+                if (e.features.length > 0) {
+                    const props = e.features[0].properties;
+                    location.href = `view.html#${props.sourceName}.${props.id}`;
+
+                    if (popupEventId === props.dbid) {
+                        return; // 同じ地震のポップアップが既に表示されている場合は何もしない
+                    }
+                    // UIkitのユーティリティを使ったツールチップの中身
+                    const content = `
+                        <div class="uk-card uk-card-small">
+                            <div class="uk-text-bold uk-text-small uk-margin-remove">${props.epicentername}</div>
+                            <span uk-icon="icon: clock"></span>時刻<br>
+                            ${props.year}年${props.month}月${props.days}日 ${props.hours}時${props.minutes}分ごろ<br>
+                            <span uk-icon="icon: location"></span>震源<br>
+                            M${props.magnitude} 深さ${props.depth}<br>
+                            ${toIntText(Number(Object.entries(JSON.parse(props.int))[0][1]))}
+                        </div>
+                    `;
+
+                    popupEventId = props.dbid;
+
+                    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                    }
+                    popup.setLngLat(coordinates).setHTML(content).addTo(map);
+                }
+            });
+
+            draw = new terraDraw.TerraDraw({
+                adapter: new terraDrawMaplibreGlAdapter.TerraDrawMapLibreGLAdapter({ map: map, lib: maplibregl }),
+                modes: [
+                    new terraDraw.TerraDrawPolygonMode({
+                        snapping: true,
+                        allowSelfIntersections: false,
+                        styles: { fillColor: '#3bb2d0', fillOpacity: 0.2, outlineColor: '#3bb2d0' }
+                    }),
+                    new terraDraw.TerraDrawRectangleMode({
+                        styles: { fillColor: '#3bb2d0', fillOpacity: 0.2, outlineColor: '#3bb2d0' }
+                    }),
+                    new terraDraw.TerraDrawCircleMode({
+                        snapping: true,
+                        styles: { fillColor: '#3bb2d0', fillOpacity: 0.2, outlineColor: '#3bb2d0' }
+                    }),
+                    new terraDraw.TerraDrawSelectMode({
+                        flags: {
+                            polygon: { allowRotation: false, allowScaling: true, allowCenterDrag: true },
+                            rectangle: { allowRotation: false, allowScaling: true, allowCenterDrag: true },
+                            circle: { allowRotation: false, allowScaling: true, allowCenterDrag: true }
+                        }
+                    })
+                ]
+            });
+
+            draw.start();
+
+            draw.on('finish', () => {
+                const snapshot = draw.getSnapshot();
+                if (snapshot.length === 0) return;
+                
+                // 最新の図形を取得してフィルタリング
+                const lastFeature = snapshot[snapshot.length - 1];
+                console.log(lastFeature);
+                epicenterFilterFeature = lastFeature;
+
+                epicenterFilterType = 'area';
+                updateEpicenterFilterDisplay();
+
+                // 描画後、選択モードに切り替えて微調整可能にする
+                document.getElementById('draw-action-bar').style.display = 'none';
+                document.querySelectorAll('.action-btn').forEach(b => b.classList.remove('active'));
+                draw.setMode('select');
+            });
+        });
+
+        
+
+        async function searchEarthquakes() {
+            const startDateInput = document.getElementById('start').value;
+            const endDateInput = document.getElementById('end').value;
+            const sortOptionInput = document.getElementById('sort').value;
+            const maxIntInput = document.getElementById('maxint').value ? Number(document.getElementById('maxint').value) : null;
+
+            const start = startDateInput ? new Date(startDateInput) : null;
+            const end = endDateInput ? new Date(endDateInput) : null;
+
+            const minM = parseFloat(document.getElementById('min-mag').value) || 0.0;
+            const maxM = parseFloat(document.getElementById('max-mag').value) || 9.9;
+            const minD = parseInt(document.getElementById('min-depth').value) || 0;
+            const maxD = parseInt(document.getElementById('max-depth').value) || 999;
+
+            try {
+                const response = await fetch('sources.json');
+                const sources = await response.json();
+                
+                let targetSources = sources.filter(s => s.visible && s.dbid);
+
+                if (start || end) {
+                    targetSources = targetSources.filter(s => {
+                        const sYear = parseInt(s.year);
+                        const sMonth = parseInt(s.month);
+                        const monthStart = new Date(sYear, sMonth - 1, 1);
+                        const monthEnd = new Date(sYear, sMonth, 0, 23, 59, 59);
+
+                        if (start && end) {
+                            return monthEnd >= start && monthStart <= end;
+                        } else if (start) {
+                            return monthEnd >= start;
+                        } else if (end) {
+                            return monthStart <= end;
+                        }
+                        return true;
+                    });
+                }
+
+                if (targetSources.length === 0) {
+                    alert('指定された期間に該当する地震が見つかりませんでした。');
+                    return;
+                }
+
+                let allFilteredEqs = [];
+                const MAX_RESULTS = 2000;
+                let processedCount = 0;
+
+                // Sequential processing
+                for (const source of targetSources) {
+                    await new Promise(r => setTimeout(r, 0));
+
+                    try {
+                        const res = await fetch(source.path);
+                        if (!res.ok) continue;
+                        const data = await res.json();
+                        
+                        const chunk = data.map(eq => {
+                            var lng = eq.longitude.replace('°', '/').replace('’', '/').split('/');
+                            var lat = eq.latitude.replace('°', '/').replace('’', '/').split('/');
+                            lng = Number(lng[0]) + (Number(lng[1]) / 60);
+                            lat = Number(lat[0]) + (Number(lat[1]) / 60);
+                            return ({...eq, sourceName: source.name, year: source.year, month: source.month, lng: lng, lat: lat });
+                        });
+                        
+                        const filteredChunk = chunk.filter(eq => {
+                            // Date Filter
+                            let eqTime = null;
+                            if (start || end) {
+                                const y = eq.sourceName.substring(0, 4);
+                                const m = eq.sourceName.substring(4, 6);
+                                eqTime = new Date(y, m - 1, eq.days, eq.hours, eq.minutes);
+                            }
+                            if (start && eqTime < start) return false;
+                            if (end && eqTime > end) return false;
+
+                            // Max Intensity Filter
+                            if (maxIntInput !== null && Number(Object.entries(eq.int)[0][1]) < maxIntInput) return false;
+
+                            // Epicenter Filter
+                            if (epicenterFilterType === 'name' && selectedRegions.length > 0) {
+                                if (!selectedRegions.includes(eq.epicentername)) return false;
+                            } else if (epicenterFilterType === 'area' && epicenterFilterFeature) {
+                                const epicenter = turf.point([eq.lng, eq.lat]);
+                                if (!turf.booleanPointInPolygon(epicenter, epicenterFilterFeature)) return false;
+                            }
+
+                            // Magnitude Filter
+                            if (eq.magnitude) {
+                                const mag = parseFloat(eq.magnitude);
+                                if (mag < minM || mag > maxM) return false;
+                            }
+
+                            // Depth Filter
+                            if (eq.depth !== undefined) {
+                                const depth = parseInt(eq.depth);
+                                if (depth < minD || depth > maxD) return false;
+                            }
+                            return true;
+                        });
+
+                        allFilteredEqs = allFilteredEqs.concat(filteredChunk);
+                    } catch (e) {
+                        console.error('Failed ' + source.path, e);
+                    }
+                    processedCount++;
+                }
+
+                // Sort results
+                allFilteredEqs.sort((a, b) => {
+                    if (sortOptionInput === '発生日時の新しい順') {
+                        const getTime = (eq) => {
+                            const y = eq.sourceName.substring(0, 4);
+                            const m = eq.sourceName.substring(4, 6);
+                            return new Date(y, m - 1, eq.days, eq.hours, eq.minutes).getTime();
+                        };
+                        return getTime(b) - getTime(a);
+                    } else if (sortOptionInput === '発生日時の古い順') {
+                        const getTime = (eq) => {
+                            const y = eq.sourceName.substring(0, 4);
+                            const m = eq.sourceName.substring(4, 6);
+                            return new Date(y, m - 1, eq.days, eq.hours, eq.minutes).getTime();
+                        };
+                        return getTime(a) - getTime(b);
+                    } else if (sortOptionInput === '最大計測震度の大きい順') {
+                        const getMaxInt = (eq) => Number(Object.entries(eq.int)[0][1]);
+                        return getMaxInt(b) - getMaxInt(a);
+                    } else if (sortOptionInput === '地震の規模の大きい順') {
+                        return Number(b.magnitude) - Number(a.magnitude);
+                    }
+                });
+
+
+                if (allFilteredEqs.length === 0) {
+                    alert('条件に一致する地震は見つかりませんでした。')
+                    return;
+                }
+
+                const displayItems = allFilteredEqs.slice(0, MAX_RESULTS);
+                let mappingItems = displayItems.slice();
+                mappingItems.reverse();
+                const geojson = {
+                    type: 'FeatureCollection',
+                    features: mappingItems.map(item => {
+                        var lng = item.longitude.replace('°', '/').replace('’', '/').split('/');
+                        var lat = item.latitude.replace('°', '/').replace('’', '/').split('/');
+                        lng = Number(lng[0]) + (Number(lng[1]) / 60);
+                        lat = Number(lat[0]) + (Number(lat[1]) / 60);
+
+                        let circleRadius = Number(item.magnitude) ? Number(item.magnitude)*3 : 3;
+                        let depthColor = getDepthColor(Number(item.depth.replace('km', '')));
+                        return {
+                            type: 'Feature',
+                            geometry: {
+                                type: 'Point',
+                                coordinates: [lng, lat]
+                            },
+                            properties: { ...item, 'circle-radius': circleRadius, 'depth-color': depthColor }
+                        };
+                    })
+                };
+                map.getSource('earthquake-data').setData(geojson);
+                console.log('検索結果:', allFilteredEqs);
+                console.log(allFilteredEqs.length, mappingItems.length)
+
+                let resultsHtml = '';
+                resultsHtml += `<li>${displayItems.length}件(全${allFilteredEqs.length}件)</li>`;
+                for (let i = 0; i < displayItems.length; i++) {
+                    resultsHtml += `<li><a class="uk-link-reset" href="view.html#${displayItems[i].sourceName}.${displayItems[i].id}">${displayItems[i].year}/${displayItems[i].month}/${displayItems[i].days} ${displayItems[i].hours}:${displayItems[i].minutes} ${displayItems[i].epicentername}<br>深さ${displayItems[i].depth} M${displayItems[i].magnitude} ${toIntText(Number(Object.entries(displayItems[i].int)[0][1]))}</a></li>`;
+                }
+                document.getElementById('search-results').innerHTML = resultsHtml;
+            } catch (error) {
+                console.error('データの取得に失敗しました:', error);
+                alert('地震データの取得に失敗しました。');
+            }
+        }
+
+        
+        function toIntText(int) {
+            if (int < 0.5) {return '<span class="uk-label">震度０ ('+int.toFixed(1)+')</span>';
+            } else if (int < 1.5) {return '<span class="uk-label" style="background: #f2f2ff; color: black;">震度１ ('+int.toFixed(1)+')</span>';
+            } else if (int < 2.5) {return '<span class="uk-label" style="background: #00aaff; color: black;">震度２ ('+int.toFixed(1)+')</span>';
+            } else if (int < 3.5) {return '<span class="uk-label" style="background: #0041ff; color: white;">震度３ ('+int.toFixed(1)+')</span>';
+            } else if (int < 4.5) {return '<span class="uk-label" style="background: #fae696; color: black;">震度４ ('+int.toFixed(1)+')</span>';
+            } else if (int < 5.0) {return '<span class="uk-label" style="background: #ffe600; color: black;">震度５弱 ('+int.toFixed(1)+')</span>';
+            } else if (int < 5.5) {return '<span class="uk-label" style="background: #ff9900; color: black;">震度５強 ('+int.toFixed(1)+')</span>';
+            } else if (int < 6.0) {return '<span class="uk-label" style="background: #ff2800; color: white;">震度６弱 ('+int.toFixed(1)+')</span>';
+            } else if (int < 6.5) {return '<span class="uk-label" style="background: #a50021; color: white;">震度６強 ('+int.toFixed(1)+')</span>';
+            } else  {return '<span class="uk-label" style="background: #b40068; color: white;">震度７ ('+int.toFixed(1)+')</span>';
+            }
+        }
+
+        // 気象庁 震度データベースより
+        function getDepthColor(depth) {
+            const d = Number(depth) || 0;
+            let h = 0; // Hue (色相)
+            let l = 50; // Lightness (輝度)
+
+            if (d <= 10) {
+                h = 0;
+                l = 25 + (d * 2.5); // 0km(25%) -> 10km(50%)
+            } else if (d <= 30) {
+                h = (d - 10) * 3;    // 10km(0) -> 30km(60)
+                l = 50;
+            } else if (d <= 50) {
+                h = 60;             // 30-50kmは黄色固定
+                l = 50;
+            } else if (d <= 100) {
+                h = 60 + (d - 50) * 1.2; // 50km(60) -> 100km(120)
+                l = 50 - (d - 50) * 0.25; // 50km(50%) -> 100km(37.5%)
+            } else if (d <= 200) {
+                h = 120 + (d - 100) * 0.9; // 100km(120) -> 200km(210)
+                l = 37.5 + (d - 100) * 0.075; // 100km(37.5%) -> 200km(45%)
+            } else if (d <= 700) {
+                h = 210 + (d - 200) * 0.06;  // 200km(210) -> 700km(240)
+                l = 45 - (d - 200) * 0.04;   // 200km(45%) -> 700km(25%)
+            } else {
+                h = 240; // 700km超は青固定
+                l = 25;
+            }
+
+            return `hsl(${h}, 100%, ${l}%)`;
+        }
+
+
+        // 地名のマスターデータ（実際はデータからユニークなものを抽出してもOK）
+        const allRegions = ["石狩地方北部","石狩地方中部","石狩地方南部","渡島地方北部","渡島地方東部","渡島地方西部","檜山地方","後志地方北部","後志地方東部","後志地方西部","空知地方北部","空知地方中部","空知地方南部","上川地方北部","上川地方中部","上川地方南部","留萌地方中北部","留萌地方南部","宗谷地方北部","宗谷地方南部","網走地方","北見地方","紋別地方","胆振地方西部","胆振地方中東部","日高地方西部","日高地方中部","日高地方東部","十勝地方北部","十勝地方中部","十勝地方南部","釧路地方北部","釧路地方中南部","根室地方北部","根室地方中部","根室地方南部","北海道南西沖","北海道西方沖","石狩湾","北海道北西沖","宗谷海峡","国後島付近","択捉島付近","北海道東方沖","根室半島南東沖","釧路沖","十勝沖","浦河沖","苫小牧沖","内浦湾","宗谷東方沖","網走沖","択捉島南東沖","青森県津軽北部","青森県津軽南部","青森県三八上北地方","青森県下北地方","岩手県沿岸北部","岩手県沿岸南部","岩手県内陸北部","岩手県内陸南部","宮城県北部","宮城県南部","宮城県中部","秋田県沿岸北部","秋田県沿岸南部","秋田県内陸北部","秋田県内陸南部","山形県庄内地方","山形県最上地方","山形県村山地方","山形県置賜地方","福島県中通り","福島県浜通り","福島県会津","津軽海峡","山形県沖","秋田県沖","青森県西方沖","陸奥湾","青森県東方沖","岩手県沖","宮城県沖","三陸沖","福島県沖","茨城県北部","茨城県南部","千葉県南東沖","栃木県北部","栃木県南部","群馬県北部","群馬県南部","埼玉県北部","埼玉県南部","埼玉県秩父地方","千葉県北東部","千葉県北西部","千葉県南部","房総半島南方沖","東京都２３区","東京都多摩東部","東京都多摩西部","神奈川県東部","神奈川県西部","新潟県上越地方","新潟県中越地方","新潟県下越地方","新潟県下越沖","新潟県上中越沖","富山県東部","富山県西部","石川県能登地方","石川県加賀地方","福井県嶺北","福井県嶺南","山梨県中・西部","山梨県東部・富士五湖","長野県北部","長野県中部","長野県南部","岐阜県飛騨地方","岐阜県美濃東部","岐阜県美濃中西部","静岡県伊豆地方","静岡県東部","静岡県中部","静岡県西部","愛知県東部","愛知県西部","三重県北部","三重県中部","三重県南部","三重県南東沖","茨城県沖","関東東方沖","千葉県東方沖","八丈島東方沖","八丈島近海","東京湾","相模湾","伊豆大島近海","伊豆半島東方沖","三宅島近海","新島・神津島近海","駿河湾","駿河湾南方沖","遠州灘","三河湾","伊勢湾","若狭湾","福井県沖","石川県西方沖","能登半島沖","富山湾","佐渡付近","東海道南方沖","滋賀県北部","滋賀県南部","京都府北部","京都府南部","大阪府北部","大阪府南部","兵庫県北部","兵庫県南東部","兵庫県南西部","奈良県","和歌山県北部","和歌山県南部","鳥取県東部","鳥取県中部","鳥取県西部","島根県東部","島根県西部","岡山県北部","岡山県南部","広島県北部","広島県南東部","広島県南西部","徳島県北部","徳島県南部","香川県東部","香川県西部","愛媛県東予","愛媛県中予","愛媛県南予","高知県東部","高知県中部","高知県西部","土佐湾","紀伊水道","大阪湾","播磨灘","瀬戸内海中部","安芸灘","周防灘","伊予灘","豊後水道","山口県北西沖","島根県沖","鳥取県沖","隠岐島近海","兵庫県北方沖","京都府沖","淡路島付近","和歌山県南方沖","山口県北部","山口県西部","山口県東部","山口県中部","福岡県福岡地方","福岡県北九州地方","福岡県筑豊地方","福岡県筑後地方","佐賀県北部","佐賀県南部","長崎県北部","長崎県南西部","長崎県島原半島","熊本県阿蘇地方","熊本県熊本地方","熊本県球磨地方","熊本県天草・芦北地方","大分県北部","大分県中部","大分県南部","大分県西部","宮崎県北部平野部","宮崎県北部山沿い","宮崎県南部平野部","宮崎県南部山沿い","鹿児島県薩摩地方","鹿児島県大隅地方","五島列島近海","天草灘","有明海","橘湾","鹿児島湾","種子島近海","日向灘","奄美大島近海","壱岐・対馬近海","福岡県北西沖","薩摩半島西方沖","トカラ列島近海","奄美大島北西沖","大隅半島東方沖","九州地方南東沖","種子島南東沖","奄美大島北東沖","沖縄本島近海","南大東島近海","沖縄本島南方沖","宮古島近海","石垣島近海","石垣島南方沖","西表島付近","与那国島近海","沖縄本島北西沖","宮古島北西沖","石垣島北西沖","台湾付近","東シナ海","四国沖","鳥島近海","鳥島東方沖","オホーツク海南部","サハリン西方沖","日本海北部","日本海中部","日本海西部","父島近海","千島列島","千島列島南東沖","北海道南東沖","東北地方東方沖","小笠原諸島西方沖","硫黄島近海","小笠原諸島東方沖","南海道南方沖","薩南諸島東方沖","本州南方沖","サハリン南部付近","北西太平洋","マリアナ諸島","黄海","朝鮮半島南部","朝鮮半島北部","中国東北部","ウラジオストク付近","シベリア南部","サハリン近海","アリューシャン列島","カムチャツカ半島付近","北米西部","北米中部","北米東部","中米","南米西部","南米中部","南米東部","北東太平洋","南太平洋","インドシナ半島付近","フィリピン付近","インドネシア付近","グアム付近","ニューギニア付近","ニュージーランド付近","オーストラリア付近","シベリア付近","ロシア西部","ロシア中部","ロシア東部","中央アジア","中国西部","中国中部","中国東部","インド付近","インド洋","中東","ヨーロッパ西部","ヨーロッパ中部","ヨーロッパ東部","地中海","アフリカ西部","アフリカ中部","アフリカ東部","北大西洋","南大西洋","北極付近","南極付近","遠地"];
+        let selectedRegions = [];
+
+        // 初期リストの表示
+        function initRegionList() {
+            renderList(allRegions);
+        }
+
+        // リストの描画
+        function renderList(list) {
+            const container = document.getElementById('region-list');
+            container.innerHTML = list.map(name => `
+                <li class="uk-margin-small uk-padding-small uk-text-small" style="cursor: pointer; padding: 5px 10px;" onclick="addRegion('${name}')">
+                    ${name}
+                </li>
+            `).join('');
+        }
+
+        // 検索フィルター
+        function filterRegionList() {
+            const query = document.getElementById('region-search').value;
+            const filtered = allRegions.filter(name => name.includes(query));
+            renderList(filtered);
+        }
+
+        // タグの追加
+        function addRegion(name) {
+            if (!selectedRegions.includes(name)) {
+                selectedRegions.push(name);
+                updateTags();
+            }
+        }
+
+        // タグの削除
+        function removeRegion(name) {
+            selectedRegions = selectedRegions.filter(r => r !== name);
+            updateTags();
+        }
+
+        // 全解除
+        function clearAllRegions() {
+            selectedRegions = [];
+            updateTags();
+        }
+
+        // タグUIの更新
+        function updateTags() {
+            const container = document.getElementById('selected-regions');
+            container.innerHTML = selectedRegions.map(name => `
+                <span class="uk-label uk-flex uk-flex-middle" style="background: #f8f8f8; color: #666; border: 1px solid #ddd; padding: 2px 8px; border-radius: 4px;">
+                    ${name}
+                    <a href="javascript:void(0)" class="uk-margin-small-left" style="color: #999; text-decoration: none;" onclick="removeRegion('${name}')">×</a>
+                </span>
+            `).join('');
+            if (selectedRegions.length === 0) {
+                epicenterFilterType = null;
+                updateEpicenterFilterDisplay();
+            } else {
+                epicenterFilterType = 'name';
+                updateEpicenterFilterDisplay();
+            }
+        }
+
+        // 実行
+        initRegionList();
+
+        function setMonthRange(option) {
+            let baseDate;
+            if (option === 0) {
+                baseDate = new Date();
+            } else if (option === 1) {
+                baseDate = new Date(document.getElementById('start').value);
+                baseDate.setMonth(baseDate.getMonth()+1);
+            } else if (option === -1) {
+                baseDate = new Date(document.getElementById('start').value);
+                baseDate.setMonth(baseDate.getMonth()-1);
+            }
+            const firstDay = new Date(baseDate.getFullYear(), baseDate.getMonth(), 1, 0, 0, 0);
+            const lastDay = new Date(baseDate.getFullYear(), baseDate.getMonth() + 1, 0, 23, 59, 59);
+            document.getElementById('start').value = formatDateForInput(firstDay);
+            document.getElementById('end').value = formatDateForInput(lastDay);
+        }
+
+        function setYearRange(option) {
+            let baseDate;
+            const startVal = document.getElementById('start').value;
+
+            if (option === 0) {
+                baseDate = new Date();
+            } else {
+                baseDate = startVal ? new Date(startVal) : new Date();
+                if (option === 1) {
+                    baseDate.setFullYear(baseDate.getFullYear() + 1);
+                } else if (option === -1) {
+                    baseDate.setFullYear(baseDate.getFullYear() - 1);
+                }
+            }
+
+            const firstDay = new Date(baseDate.getFullYear(), 0, 1, 0, 0, 0);
+            const lastDay = new Date(baseDate.getFullYear(), 11, 31, 23, 59, 59);
+
+            document.getElementById('start').value = formatDateForInput(firstDay);
+            document.getElementById('end').value = formatDateForInput(lastDay);
+        }
+
+        function formatDateForInput(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            const hh = String(date.getHours()).padStart(2, '0');
+            const mm = String(date.getMinutes()).padStart(2, '0');
+            const ss = String(date.getSeconds()).padStart(2, '0');
+            return `${y}-${m}-${d}T${hh}:${mm}:${ss}`;
+        }
+
+        // アクションバーのボタン処理
+        function startDraw(mode) {
+            resetDraw();
+            if (mode === 'rectangle') {
+                draw.setMode('rectangle');
+                document.getElementById('rectangle-btn').classList.add('active');
+            } else if (mode === 'polygon') {
+                draw.setMode('polygon');
+                document.getElementById('polygon-btn').classList.add('active');
+            } else if (mode === 'circle') {
+                draw.setMode('circle');
+                document.getElementById('circle-btn').classList.add('active');
+            }
+        }
+
+        function resetDraw() {
+            draw.clear();
+            document.querySelectorAll('.action-btn').forEach(b => b.classList.remove('active'));
+            epicenterFilterType = null;
+            epicenterFilterFeature = null;
+            updateEpicenterFilterDisplay();
+        }
+
+        function stopDraw() {
+            const bar = document.getElementById('draw-action-bar');
+            bar.style.display = 'none';
+            draw.setMode('static');
+            document.querySelectorAll('.action-btn').forEach(b => b.classList.remove('active'));
+        }
+
+        function enableDrawMode() {
+            document.getElementById('draw-action-bar').style.display = '';
+            if (epicenterFilterFeature) {
+                epicenterFilterType = 'area';
+                updateEpicenterFilterDisplay();
+            }
+        }
+
+        function enableNameFilter() {
+            if (selectedRegions.length > 0) {
+                epicenterFilterType = 'name';
+                updateEpicenterFilterDisplay();
+            }
+        }
+
+        function updateEpicenterFilterDisplay() {
+            if (epicenterFilterType === 'area' && epicenterFilterFeature) {
+                const shape = epicenterFilterFeature.properties.shape || epicenterFilterFeature.geometry.type;
+                document.getElementById('selected-region').textContent = '選択中: ' + shape;
+                document.getElementById('name-filter-label').textContent = '震央指定 (領域)';
+            } else if (epicenterFilterType === 'name' && selectedRegions.length > 0) {
+                document.getElementById('selected-region').textContent = selectedRegions.length+' 地域を選択中 '+selectedRegions.join(', ');
+                document.getElementById('name-filter-label').textContent = '震央指定 (震央地名)';
+            } else {
+                document.getElementById('selected-region').textContent = '指定なし';
+                document.getElementById('name-filter-label').textContent = '震央指定';
+            }
+        }
+
+        UIkit.icon.add({
+            'terra-polygon': '<svg width="20" height="20" viewBox="0 0 100 100"><path fill="currentColor" d="M 32.5 10.949219 C 25.610289 10.949219 19.949219 16.610289 19.949219 23.5 C 19.949219 27.520481 21.884649 31.113101 24.859375 33.416016 L 14.816406 54.171875 C 14.064948 54.028663 13.291955 53.949219 12.5 53.949219 C 5.6102887 53.949219 -0.05078148 59.610289 -0.05078125 66.5 C -0.05078148 73.389711 5.6102887 79.050781 12.5 79.050781 C 17.630345 79.050781 22.039068 75.898806 23.962891 71.447266 L 75.240234 79.15625 C 76.472031 84.785868 81.52121 89.050781 87.5 89.050781 C 94.155857 89.050781 99.614194 83.753892 99.980469 77.183594 A 3.5 3.5 0 0 0 100.05078 76.5 A 3.5 3.5 0 0 0 99.978516 75.800781 C 99.604267 69.237846 94.1505 63.949219 87.5 63.949219 C 87.366145 63.949219 87.236411 63.964509 87.103516 63.96875 L 80.242188 43.050781 C 83.517278 40.924466 85.75074 37.304504 85.980469 33.183594 A 3.5 3.5 0 0 0 86.050781 32.5 A 3.5 3.5 0 0 0 85.978516 31.800781 C 85.604267 25.237846 80.1505 19.949219 73.5 19.949219 C 68.437595 19.949219 64.047669 23.010799 62.070312 27.365234 L 44.988281 22.847656 A 3.5 3.5 0 0 0 44.978516 22.800781 C 44.604267 16.237846 39.1505 10.949219 32.5 10.949219 z M 32.5 17.949219 C 35.60663 17.949219 38.050781 20.39337 38.050781 23.5 C 38.050781 26.60663 35.60663 29.050781 32.5 29.050781 C 29.39337 29.050781 26.949219 26.60663 26.949219 23.5 C 26.949219 20.39337 29.39337 17.949219 32.5 17.949219 z M 73.5 26.949219 C 76.60663 26.949219 79.050781 29.39337 79.050781 32.5 C 79.050781 35.60663 76.60663 38.050781 73.5 38.050781 C 70.39337 38.050781 67.949219 35.60663 67.949219 32.5 C 67.949219 29.39337 70.39337 26.949219 73.5 26.949219 z M 43.363281 29.658203 L 61.101562 34.347656 C 62.007245 40.370982 67.239258 45.050781 73.5 45.050781 C 73.511213 45.050781 73.521997 45.048858 73.533203 45.048828 L 80.453125 66.140625 C 78.321017 67.600757 76.665039 69.703452 75.748047 72.15625 L 24.832031 64.501953 C 24.379304 61.719352 23.011499 59.231633 21.044922 57.371094 L 31.386719 35.994141 C 31.754566 36.027121 32.124119 36.050781 32.5 36.050781 C 37.151785 36.050781 41.21093 33.459304 43.363281 29.658203 z M 12.5 60.949219 C 15.60663 60.949219 18.050781 63.39337 18.050781 66.5 C 18.050781 69.60663 15.60663 72.050781 12.5 72.050781 C 9.3933696 72.050781 6.9492186 69.60663 6.9492188 66.5 C 6.9492186 63.39337 9.3933696 60.949219 12.5 60.949219 z M 87.5 70.949219 C 90.60663 70.949219 93.050781 73.39337 93.050781 76.5 C 93.050781 79.60663 90.60663 82.050781 87.5 82.050781 C 84.39337 82.050781 81.949219 79.60663 81.949219 76.5 C 81.949219 73.39337 84.39337 70.949219 87.5 70.949219 z " /></svg>',
+            'terra-rectangle': '<svg width="20" height="20" viewBox="0 0 100 100"><path fill="currentColor" d="M 12.550781 15 C 5.66107 15 -2.2838852e-07 20.66107 0 27.550781 C -1.9944717e-07 33.56743 4.3174351 38.645543 10 39.835938 L 10 60.263672 C 4.3174351 61.454445 -1.9944718e-07 66.534133 0 72.550781 C -2.283885e-07 79.440493 5.6610701 85.09961 12.550781 85.099609 C 18.596918 85.099609 23.640641 80.7256 24.791016 75 L 75.246094 75 C 76.397621 80.731839 81.498627 85.09961 87.550781 85.099609 C 94.201808 85.09961 99.655828 79.811706 100.0293 73.248047 A 3.5 3.5 0 0 0 100.09961 72.550781 A 3.5 3.5 0 0 0 100.0293 71.853516 C 99.703148 66.117079 95.495014 61.35586 90 60.246094 L 90 39.853516 C 95.494878 38.744081 99.702909 33.984262 100.0293 28.248047 A 3.5 3.5 0 0 0 100.09961 27.550781 A 3.5 3.5 0 0 0 100.0293 26.853516 C 99.656101 20.289604 94.201991 15 87.550781 15 C 81.534133 15 76.454445 19.317435 75.263672 25 L 24.769531 25 C 23.580232 19.323959 18.561251 15.000001 12.550781 15 z M 12.550781 22 C 15.657411 22 18.099609 24.444151 18.099609 27.550781 C 18.099609 30.657411 15.657411 33.099609 12.550781 33.099609 C 9.444151 33.099609 6.9999999 30.657412 7 27.550781 C 6.9999999 24.444151 9.444151 22 12.550781 22 z M 87.550781 22 C 90.657412 22 93.099609 24.444151 93.099609 27.550781 C 93.099609 30.657412 90.657412 33.099609 87.550781 33.099609 C 84.444151 33.099609 82 30.657412 82 27.550781 C 82 24.444151 84.444151 22 87.550781 22 z M 24.216797 32 L 75.837891 32 C 77.103663 35.294311 79.718702 37.931586 83 39.224609 L 83 60.875 C 79.752203 62.155195 77.155195 64.752203 75.875 68 L 24.175781 68 C 22.890876 64.723531 20.277796 62.105629 17 60.837891 L 17 39.261719 C 20.311799 37.981156 22.94656 35.323812 24.216797 32 z M 12.550781 67 C 15.657411 67 18.099609 69.444151 18.099609 72.550781 C 18.099609 75.657411 15.657411 78.099609 12.550781 78.099609 C 9.444151 78.099609 6.9999999 75.657412 7 72.550781 C 6.9999999 69.444151 9.444151 67 12.550781 67 z M 87.550781 67 C 90.657412 67 93.099609 69.444151 93.099609 72.550781 C 93.099609 75.657412 90.657412 78.099609 87.550781 78.099609 C 84.444151 78.099609 82 75.657412 82 72.550781 C 82 69.444151 84.444151 67 87.550781 67 z " /></svg>',
+            'terra-circle': '<svg width="20" height="20" viewBox="0 0 100 100"><path fill="currentColor" d="M 50 5 C 25.188645 4.9999999 4.9999999 25.188645 5 50 C 5 74.811355 25.188645 95 50 95 C 74.811355 95 95 74.811355 95 50 C 95 25.188645 74.811355 5 50 5 z M 50 12 C 71.028047 12 88 28.971953 88 50 C 88 71.028047 71.028047 88 50 88 C 28.971953 88 12 71.028047 12 50 C 12 28.971953 28.971953 12 50 12 z M 47.267578 39.5 L 47.267578 47.267578 L 39.5 47.267578 L 39.5 52.732422 L 47.267578 52.732422 L 47.267578 60.5 L 52.732422 60.5 L 52.732422 52.732422 L 60.5 52.732422 L 60.5 47.267578 L 52.732422 47.267578 L 52.732422 39.5 L 47.267578 39.5 z " /></svg>'
+        })
+    </script>
+</body>
+</html>

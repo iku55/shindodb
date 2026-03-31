@@ -60,6 +60,7 @@
     <script src="js/uikit.min.js"></script>
     <script src="js/uikit-icons.min.js"></script>
     <script>
+        location.href = "index.html#urlinput"
         document.getElementById('input').oninput = () => {
             hideAlert();
             if (document.getElementById('input').value.includes('://www.data.jma.go.jp/svd/eqdb/data/shindo/') && document.getElementById('input').value.includes('#')) {

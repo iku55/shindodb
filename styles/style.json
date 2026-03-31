@@ -1,0 +1,133 @@
+{
+    "version": 8,
+    "sources": {
+        "earthquake_data": {
+            "type": "vector",
+            "url": "pmtiles://https://iku55.github.io/eq-pmtiles-test/earthquake_map.pmtiles",
+            "attribution": "気象庁"
+        },
+        "earthquake_data_world": {
+            "type": "vector",
+            "url": "pmtiles://https://iku55.github.io/eq-pmtiles-test/earthquake_map_world.pmtiles",
+            "attribution": "Natural Earth"
+        }
+    },
+    "layers": [
+        {
+            "id": "background",
+            "type": "background",
+            "paint": {
+                "background-color": "#a2cffe"
+            }
+        },
+        {
+            "id": "plate-border",
+            "source": "earthquake_data",
+            "source-layer": "plates",
+            "type": "line",
+            "paint": {
+                "line-color": "#ff4500",
+                "line-width": 1.5
+            }
+        },
+        {
+            "id": "world-fill",
+            "source": "earthquake_data_world",
+            "source-layer": "world",
+            "type": "fill",
+            "paint": {
+                "fill-color": "#d3d3d3",
+                "fill-opacity": 1.0
+            }
+        },
+        {
+            "id": "world-border",
+            "source": "earthquake_data_world",
+            "source-layer": "world",
+            "type": "line",
+            "paint": {
+                "line-color": "#000000",
+                "line-width": 0.3,
+                "line-opacity": 0.2
+            }
+        },
+        {
+            "id": "land-fill",
+            "source": "earthquake_data",
+            "source-layer": "prefecture",
+            "type": "fill",
+            "paint": {
+                "fill-color": "#d3d3d3",
+                "fill-opacity": 1.0
+            }
+        },
+        {
+            "id": "prefecture-border",
+            "source": "earthquake_data",
+            "source-layer": "prefecture",
+            "type": "line",
+            "maxzoom": 8,
+            "paint": {
+                "line-color": "#000000",
+                "line-width": [
+                    "step",
+                    [
+                        "zoom"
+                    ],
+                    0.5,
+                    5,
+                    1.5
+                ],
+                "line-opacity": [
+                    "step",
+                    [
+                        "zoom"
+                    ],
+                    0.8,
+                    5,
+                    0.4
+                ]
+            }
+        },
+        {
+            "id": "forecast-border",
+            "source": "earthquake_data",
+            "source-layer": "forecast",
+            "type": "line",
+            "minzoom": 5,
+            "paint": {
+                "line-color": "#000000",
+                "line-width": [
+                    "step",
+                    [
+                        "zoom"
+                    ],
+                    0.3,
+                    8,
+                    1.0
+                ],
+                "line-opacity": [
+                    "step",
+                    [
+                        "zoom"
+                    ],
+                    0.2,
+                    8,
+                    0.8
+                ]
+            }
+        },
+        {
+            "id": "city-border",
+            "source": "earthquake_data",
+            "source-layer": "city",
+            "type": "line",
+            "minzoom": 8,
+            "paint": {
+                "line-color": "#333333",
+                "line-width": 0.5,
+                "line-opacity": 0.3
+            }
+        }
+    ]
+}

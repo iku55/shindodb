@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
     <title>計測震度データベース</title>
     <meta charset="utf-8">
@@ -19,80 +19,110 @@
             height: 100%;
             margin: 0;
         }
-        .btn {
-            position: fixed;
-            z-index: 1000;
-            border: 2px solid #cbcbcb;
-            left: 10px;
+        .uk-accordion-content {
+            padding-left: 15px;
+            border-left: 2px solid #f0f0f0;
+            margin-top: 10px;
         }
-        #fromurlbtn {
-            top: 10px;
-        }
+        
+
     </style>
 </head>
 <body>
     <div class="uk-container">
-        <a id="fromurlbtn" href="fromurl.html" class="uk-icon-button btn" uk-icon="search"
-        uk-tooltip="title: 震度データベースのURLから選択する; pos: right"></a>
+        <h1 class="uk-heading">計測震度データベース</h1>
 
-        <h1 class="uk-heading-divider">一覧</h1>
+        <p>
+            計測震度データベースでは、気象庁の「報道発表資料」「地震・火山月報」に掲載されている、有感地震の各観測点で観測した計測震度の情報を表示します。<br>
+            計測震度は、特定の地点における揺れの強さを示す指標であり、これをもとに震度が決定されます。計測震度を見ることにより、「震度５強寄りの震度５弱」などの情報を読み取ることができます。<br>
+            このサイトは、地震情報の高度利用者向けに作成しています。地震や防災情報の詳しい知識が必要です。一般向け、最新の情報は<a class="uk-link" href="https://www.data.jma.go.jp/eqdb/data/shindo/index.html" target="_blank">気象庁 震度データベース</a>にて確認できます。
+        </p>
 
-        <ul class="uk-list uk-list-divider" id="list">
-        </ul>
-
-        <hr>
-
-        <ul uk-accordion>
-            <li>
-                <a class="uk-accordion-title" href>更新情報(2024/12/21)</a>
-                <div class="uk-accordion-content">
-                    <div>
-                        2024年11月分を更新しました。(2024/12/21)
-                    </div>
-                    <hr>
-                    <div>
-                        2024年9月・10月分を更新しました。(2024/11/12)
-                    </div>
-                    <hr>
-                    <div>
-                        2024年8月分を更新しました。(2024/09/15)
-                    </div>
-                    <hr>
-                    <div>
-                        2024年7月分を更新しました。(2024/08/13)
-                    </div>
-                    <hr>
-                    <div>
-                        2024年6月分を更新しました。(2024/07/15)
-                    </div>
-                    <hr>
-                    <div>
-                        2024年5月分を更新しました。2023年1月の一部データを修正しました。2023年5月までの地震に補足情報を追加しました。(2024/06/25)
-                    </div>
-                    <hr>
-                    <div>
-                        月別一覧画面にて、地震番号を表示するようになりました。(2024/06/01)
-                    </div>
-                    <hr>
-                    <div>
-                        一部地震について、補足情報として緊急地震速報や被害情報を表示するようになりました。<br>
-                        現在は2022年の地震を中心に登録されていますが、以降の地震についても、登録を進めていきます。<br>
-                        また、この機能は、現在試験中の機能であり、予告なく変更、削除される場合があります。(2024/06/01)
-                    </div>
-                    <hr>
-                    <div>
-                        2024年3月・4月分を更新しました。データ形式を以前のものに差し戻しました。(2024/05/20)
-                    </div>
-                    <hr>
-                    <div>
-                        2024年2月分を更新しました。ページ分けを実装し、多量のデータも表示できるようになりました。データ形式を変更しました。(2024/03/20)
+        <div class="uk-card uk-card-default uk-card-body">
+            <h3 class="uk-card-title">地震を検索</h3>
+            <!-- <a class="uk-link" href="search.html">計測震度データベース検索</a> -->
+            <a class="uk-link uk-link-reset" href="search.html">
+                <div class="uk-inline uk-overflow-hidden uk-border-rounded">
+                    
+                    <img src="./images/search_screenshot.jpeg" width="500" height="250" alt="Search Background" style="height: 250px; object-fit: cover; display: block;">
+                    
+                    <div class="uk-overlay uk-overlay-primary uk-position-bottom uk-light uk-padding-small" style="color: #fff;">
+                        計測震度データベース検索
                     </div>
                 </div>
-            </li>
-        </ul>
+            </a>
+        </div>
+
+        <div class="uk-margin-small-top uk-card uk-card-default uk-card-body">
+            <h3 class="uk-card-title">年月別一覧</h3>
+            <ul id="archive-accordion" uk-accordion="multiple: true"></ul>
+        </div>
+
+        <div class="uk-margin-small-top uk-card uk-card-default uk-card-body">
+            <h3 class="uk-card-title">震度データベースのURLから表示</h3>
+            <input id="urlinput" class="uk-input" type="text" placeholder="ここに震度データベースのURLをペーストしてください">
+            <div class="uk-alert-warning" uk-alert id="alert" style="display: none;"></div>
+        </div>
+
+        <div class="uk-margin-small-top uk-card uk-card-default uk-card-body">
+            <h3 class="uk-card-title">更新情報</h3>
+            <ul uk-accordion>
+                <li>
+                    <a class="uk-accordion-title" href>更新情報(2026/03/31)</a>
+                    <div class="uk-accordion-content">
+                        <div>
+                            地図のデザインを、気象庁の地図データを用いてスタイルをみやすいように変更しました。<br>観測点計測震度の表示方法を変更し、軽量化しました。<br>計測震度データベースに掲載されている地震を検索できる「計測震度データベース検索」機能を追加しました。<br>
+                            このページのデザインを変更しました。「震度データベースのURLから表示」は、別ページからこのページに移動しました。リダイレクトされるようにしています。<br>データ抽出方式を更新しました。2024年12月、2025年1月～12月、2026年1月・2月分を更新しました。(2026/03/31)
+                        </div>
+                        <hr>
+                        <div>
+                            2024年11月分を更新しました。(2024/12/21)
+                        </div>
+                        <hr>
+                        <div>
+                            2024年9月・10月分を更新しました。(2024/11/12)
+                        </div>
+                        <hr>
+                        <div>
+                            2024年8月分を更新しました。(2024/09/15)
+                        </div>
+                        <hr>
+                        <div>
+                            2024年7月分を更新しました。(2024/08/13)
+                        </div>
+                        <hr>
+                        <div>
+                            2024年6月分を更新しました。(2024/07/15)
+                        </div>
+                        <hr>
+                        <div>
+                            2024年5月分を更新しました。2023年1月の一部データを修正しました。2023年5月までの地震に補足情報を追加しました。(2024/06/25)
+                        </div>
+                        <hr>
+                        <div>
+                            月別一覧画面にて、地震番号を表示するようになりました。(2024/06/01)
+                        </div>
+                        <hr>
+                        <div>
+                            一部地震について、補足情報として緊急地震速報や被害情報を表示するようになりました。<br>
+                            現在は2022年の地震を中心に登録されていますが、以降の地震についても、登録を進めていきます。<br>
+                            また、この機能は、現在試験中の機能であり、予告なく変更、削除される場合があります。(2024/06/01)
+                        </div>
+                        <hr>
+                        <div>
+                            2024年3月・4月分を更新しました。データ形式を以前のものに差し戻しました。(2024/05/20)
+                        </div>
+                        <hr>
+                        <div>
+                            2024年2月分を更新しました。ページ分けを実装し、多量のデータも表示できるようになりました。データ形式を変更しました。(2024/03/20)
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
 
         <p class="uk-text-muted">
-            Copyright 2023-2024 iku55. Source codes are licensed under the MIT License.<br>
+            Copyright 2023-2026 iku55. Source codes are licensed under the MIT License.<br>
             このサイトはGoogleアナリティクスを使用しています。<br>
             情報の正確性は保証しません。不正確なデータを確認した場合は<a href="https://forms.gle/hewkCjRMcgYUGxmH6">こちらのフォーム</a>からご報告ください。
         </p>
@@ -101,12 +131,103 @@
     <script src="js/uikit.min.js"></script>
     <script src="js/uikit-icons.min.js"></script>
     <script>
-        fetch('sources.json').then(res => res.json().then(sources => {
-            for (const source of sources) {
-                if (!source.visible) continue;
-                document.getElementById('list').innerHTML += '<li><a href="list.html#'+source.name+'">'+source.text+'</a></li>';
+        async function loadArchive() {
+            try {
+                // sources.jsonを読み込み
+                const response = await fetch('./sources.json');
+                const data = await response.json();
+
+                // 1. データを年ごとにグループ化
+                const groupedData = data.reduce((acc, item) => {
+                    if (!item.visible) return acc; // visibleがfalseのものは除外
+                    if (!acc[item.year]) {
+                        acc[item.year] = [];
+                    }
+                    acc[item.year].push(item);
+                    return acc;
+                }, {});
+
+                // 2. 年の降順（新しい順）でソート
+                const years = Object.keys(groupedData).sort((a, b) => b - a);
+
+                const accordionContainer = document.getElementById('archive-accordion');
+                
+                years.forEach((year, index) => {
+                    // 月の昇順でソート
+                    const months = groupedData[year].sort((a, b) => parseInt(a.month) - parseInt(b.month));
+
+                    // アコーディオンのアイテム（Li）を作成
+                    const li = document.createElement('li');
+                    if (index === 0) li.classList.add('uk-open'); // 最新の年は開いておく
+
+                    // HTMLの組み立て
+                    li.innerHTML = `
+                        <a class="uk-accordion-title uk-text-emphasis" href="#">
+                            <span class="uk-text-bold">${year}年</span>
+                        </a>
+                        <div class="uk-accordion-content">
+                            <div class="uk-grid-small uk-child-width-1-6@m uk-child-width-1-2" uk-grid>
+                                ${months.map(item => `
+                                    <div class="uk-text-center">
+                                        <a class="uk-button uk-button-default uk-width-1-1" 
+                                        href="list.html#${item.name}">
+                                            ${item.month}月
+                                        </a>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    
+                    accordionContainer.appendChild(li);
+                });
+
+            } catch (error) {
+                console.error('データの読み込みに失敗しました:', error);
             }
-        }))
+        }
+
+        // 実行
+        loadArchive();
+
+        document.getElementById('urlinput').oninput = () => {
+            hideAlert();
+            if (document.getElementById('urlinput').value.includes('://www.data.jma.go.jp/svd/eqdb/data/shindo/') && document.getElementById('urlinput').value.includes('#')) {
+                if (document.getElementById('urlinput').value.split('#')[1].length == 14) {
+                    fetch('sources.json').then(res => res.json().then(sources => {
+                        var source = sources.find(d => d.name == document.getElementById('urlinput').value.split('#')[1].substring(0, 6) && d.dbid == true); //一時的な対応
+                        if (source) {
+                            fetch(source.path).then(res => res.json().then(quakes => {
+                                var quake = quakes.find(d => d.dbid == document.getElementById('urlinput').value.split('#')[1]);
+                                if (quake) {
+                                    gtag('event', 'from_url', {
+                                        earthquake_id: quake.dbid,
+                                        send_to: 'G-GRQELX997W'
+                                    });
+                                    location.href = 'view.html#'+source.name+'.'+quake.id;
+                                } else {
+                                    showAlert('対象地震のデータが見つかりませんでした')
+                                }
+                            }))
+                        } else {
+                            showAlert('対象月のデータが見つかりませんでした')
+                        }
+                    }))
+                } else {
+                    showAlert('震度データベースのURLを入力してください');
+                }
+            } else {
+                showAlert('震度データベースのURLを入力してください');
+            }
+        }
+
+        function showAlert(msg) {
+            document.getElementById('alert').style.display = '';
+            document.getElementById('alert').innerHTML = '<p>'+msg+'</p>';
+        }
+        function hideAlert() {
+            document.getElementById('alert').style.display = 'none';
+        }
     </script>
 </body>
 </html>
