@@ -622,5 +622,18 @@
             "name": "2026年2月地震・火山月報(防災編)",
             "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202602/202602furoku_1.pdf"
         }
+    },
+    {
+        "text": "2026年3月",
+        "visible": true,
+        "dbid": true,
+        "path": "202603.json",
+        "name": "202603",
+        "year": "2026",
+        "month": "3",
+        "source": {
+            "name": "2026年3月地震・火山月報(防災編)",
+            "link": "https://www.data.jma.go.jp/eqev/data/gaikyo/monthly/202603/202603furoku_1.pdf"
+        }
     }
 ]
