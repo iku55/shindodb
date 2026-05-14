@@ -3,11 +3,13 @@ var source;
 var quake, longitude, latitude;
 var stations;
 var popupHTML;
+var chart;
 
 // 地図初期化
 const initMap = () => {
     return new Promise((resolve, reject) => {
         console.time('initMap');
+        chart = new SeismicScatterPlot('seismicCanvas');
         const protocol = new pmtiles.Protocol();
         maplibregl.addProtocol("pmtiles", protocol.tile);
         const PMTILES_URL = "https://iku55.github.io/eq-pmtiles-test/earthquake_map.pmtiles";
@@ -155,8 +157,9 @@ const getSources = () => {
         fetch('sources.json').then(res => res.json().then(sources => {
             source = sources.find(d => d.name == location.hash.split('.')[0].replace('#', ''));
             map.addControl(new maplibregl.AttributionControl({
-                customAttribution: 'カラースキーム: '+(document.cookie.includes('icon=kmoni')?'<a href="https://github.com/ingen084/KyoshinShindoColorMap">ingen084/KyoshinShindoColorMap</a>':'気象庁')+' | 震度データ: <a href="' + source.source.link + '">' + source.source.name + '</a>'
-            }));
+                compact: true,
+                customAttribution: '地図データ: 気象庁GISデータ, Natural Earth<br>カラースキーム: '+(document.cookie.includes('icon=kmoni')?'<a href="https://github.com/ingen084/KyoshinShindoColorMap" target="_blank">ingen084/KyoshinShindoColorMap</a>':'気象庁')+'<br>震度データ: <a href="' + source.source.link + '" target="_blank">' + source.source.name + '</a>'
+            }), 'bottom-right');
             document.title = source.year+'年'+source.month+'月#'+quake.id+'(最大震度'+toIntText(Object.entries(quake.int)[0][1])+') - 計測震度データベース';
             console.timeEnd('getSources');
             resolve();
@@ -246,6 +249,7 @@ const drawPoints = () => {
         console.time('drawPoints');
         const features = [];
         var intList = {};
+        var chartData = [];
         for (const point of Object.entries(quake.int)) {
             var station = stations.find(d => d.name == point[0].replace('＊', '').replace(/\(旧[０１２３４５６７８９]*\)/, ''));
             if (!station) {
@@ -267,6 +271,7 @@ const drawPoints = () => {
             if (!intList[station.pref.name]) { intList[station.pref.name] = {} }
             if (!intList[station.pref.name][toIntText(point[1])]) { intList[station.pref.name][toIntText(point[1])] = '' }
             intList[station.pref.name][toIntText(point[1])] += point[0] + '=' + point[1] + '　';
+            chartData.push({name: point[0], intensity: Number(point[1]), distance: calcDistance(station.lat, station.lon, latitude, longitude)});
         }
         for (const pref of Object.entries(intList)) {
             for (const int of Object.entries(pref[1])) {
@@ -289,6 +294,7 @@ const drawPoints = () => {
                 'icon-allow-overlap': true
             }
         }, 'epicenter-layer');
+        chart.draw(chartData);
         console.timeEnd('drawPoints');
         resolve();
     })
@@ -376,6 +382,15 @@ function toIntLabel(int) {
     } else if (int == '６強') {return '<span class="uk-label" style="background: #a50021; color: white;">震度６強</span>';
     } else  {return '<span class="uk-label" style="background: #b40068; color: white;">震度７</span>';
     }
+}
+
+const R = Math.PI / 180;
+function calcDistance(lat1, lng1, lat2, lng2) {
+    lat1 *= R;
+    lng1 *= R;
+    lat2 *= R;
+    lng2 *= R;
+    return 6371 * Math.acos(Math.cos(lat1) * Math.cos(lat2) * Math.cos(lng2 - lng1) + Math.sin(lat1) * Math.sin(lat2));
 }
 
 
