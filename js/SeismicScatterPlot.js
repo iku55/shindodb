@@ -1,9 +1,12 @@
 class SeismicScatterPlot {
   constructor(canvasElement, options = {}) {
-    this.canvas = typeof canvasElement === 'string' 
-      ? document.getElementById(canvasElement) 
-      : canvasElement;
-    this.ctx = this.canvas.getContext('2d');
+    this.canvasId =
+      typeof canvasElement === 'string'
+        ? canvasElement
+        : canvasElement.id;
+
+    this.canvas = null;
+    this.ctx = null;
     this.points = []; // ホバー判定用に描画座標を保持
 
     this.options = Object.assign({
@@ -31,7 +34,14 @@ class SeismicScatterPlot {
     ];
 
     this._initTooltip();
-    this.canvas.addEventListener('mousemove', (e) => this._handleMouseMove(e));
+    document.addEventListener('mousemove', (e) => {
+      if (
+        this.canvas &&
+        e.target === this.canvas
+      ) {
+        this._handleMouseMove(e);
+      }
+    });
   }
 
   _initTooltip() {
@@ -51,6 +61,14 @@ class SeismicScatterPlot {
   }
 
   draw(data) {
+    this.canvas = document.getElementById(this.canvasId);
+
+    if (!this.canvas) {
+      console.error(`Canvas not found: ${this.canvasId}`);
+      return;
+    }
+
+    this.ctx = this.canvas.getContext('2d');
     if (!data || data.length === 0) return;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.points = []; // 初期化
@@ -100,6 +118,7 @@ class SeismicScatterPlot {
   }
 
   _handleMouseMove(e) {
+    if (!this.canvas) return;
     const rect = this.canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
