@@ -661,5 +661,18 @@
             "name": "気象庁 報道発表(2026年6月)",
             "link": "https://www.jma.go.jp/jma/press/2606/08c/2605felt-eq.pdf"
         }
+    },
+    {
+        "text": "2026年6月",
+        "visible": true,
+        "dbid": true,
+        "path": "202606.json",
+        "name": "202606",
+        "year": "2026",
+        "month": "6",
+        "source": {
+            "name": "気象庁 報道発表(2026年7月)",
+            "link": "https://www.jma.go.jp/jma/press/2607/08c/2606felt-eq.pdf"
+        }
     }
 ]
