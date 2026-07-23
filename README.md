@@ -50,9 +50,9 @@
 ```
 ## ライセンス
 サイトはMITです  
-- 地図表示 [MapLibre GL JS](https://github.com/maplibre/maplibre-gl-js)
-- 地図スタイル [gsi-cyberjapan/gsivectortile-mapbox-gl-js](https://github.com/gsi-cyberjapan/gsivectortile-mapbox-gl-js)
-- スタイル [UIkit](https://github.com/uikit/uikit)
+- 地図表示 [maplibre/maplibre-gl-js](https://github.com/maplibre/maplibre-gl-js)
+- 地図データ [気象庁 予報区等GISデータの一覧](https://www.data.jma.go.jp/developer/gis.html), [Natural Earth](https://www.naturalearthdata.com/)
+- スタイル [uikit/uikit](https://github.com/uikit/uikit)
 - 震度配色(強震モニタ) [ingen084/KyoshinShindoColorMap](https://github.com/ingen084/KyoshinShindoColorMap)をもとに作成, 防災科学技術研究所(NIED)
 - 震度配色(気象庁) [気象庁](https://www.jma.go.jp/jma/index.html)をもとに作成
 - 震度観測点データ [iku55/jma_int_stations](https://github.com/iku55/jma_int_stations)
